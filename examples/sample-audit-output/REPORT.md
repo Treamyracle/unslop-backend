@@ -9,9 +9,9 @@
 
 | Finding | Slop Class | Verdict | Severity | Measured Impact |
 |---|---|---|---|---|
-| `UNSLOP-001` | `n_plus_one_cascade` | **fixed** | critical | Queries `101 → 3 (-97.0%)`, rows scanned `755,050 → 220 (-100.0%)`, p95 `95.59 ms → 1.99 ms (-97.9%)`, `golden_sha256` MATCH |
-| `UNSLOP-002` | `in_app_aggregation` | **fixed** | high | Queries `6 → 2 (-66.7%)`, rows examined `5,005 → 505 (-89.9% covering index)`, internal bytes `802.1 KB → 378 B (-100.0%)`, p95 `25.68 ms → 1.06 ms (-95.9%)`, `golden_sha256` MATCH |
-| `UNSLOP-003` | `async_waterfall` | **fixed** | high | Parallel libuv `zlib.gunzip` HTTP p95 `35.63 ms → 16.56 ms (-53.5%)`, `golden_sha256` MATCH |
-| `UNSLOP-004` | `overfetch_and_payload_bloat` | **fixed** | high | HTTP payload `641.3 KB → 29.9 KB (-95.3%)`, p95 `34.75 ms → 2.59 ms (-92.5%)`, `row_ids_sha256` MATCH |
+| `UNSLOP-001` | `n_plus_one_cascade` | **fixed** | critical | Queries `101 → 3 (-97.0%)`, rows scanned `755,050 → 220 (-100.0%)`, p95 `80.47 ms → 1.93 ms (-97.6%)`, `golden_sha256` MATCH |
+| `UNSLOP-002` | `in_app_aggregation` | **fixed** | high | Queries `6 → 2 (-66.7%)`, rows examined `5,005 → 505 (-89.9% covering index)`, internal bytes `802.1 KB → 378 B (-100.0%)`, p95 `26.84 ms → 1.10 ms (-95.9%)`, `golden_sha256` MATCH |
+| `UNSLOP-003` | `async_waterfall` | **fixed** | high | Parallel libuv `zlib.gunzip` HTTP p95 `57.20 ms → 26.45 ms (-53.8%)`, `golden_sha256` MATCH |
+| `UNSLOP-004` | `overfetch_and_payload_bloat` | **fixed** | high | HTTP payload `641.3 KB → 29.9 KB (-95.3%)`, p95 `34.36 ms → 3.28 ms (-90.5%)`, `row_ids_sha256` MATCH |
 | `UNSLOP-005` | `missing_or_broken_index` | `needs_validation` | — | Live PostgreSQL `EXPLAIN (ANALYZE, BUFFERS)` verification (see `NEEDS-VALIDATION.md`) |
 | `UNSLOP-006` | `memory_and_stream_slop` | `rejected` | — | Bounded 10.5 KB JSON response; NDJSON rewrite rejected |

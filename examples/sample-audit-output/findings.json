@@ -44,16 +44,16 @@
         "queries_per_req": 101,
         "rows_scanned": 755050,
         "internal_bytes_read": 178205,
-        "p95_ms": 95.587
+        "p95_ms": 80.474
       },
       "after_metrics": {
         "queries_per_req": 3,
         "rows_scanned": 220,
         "internal_bytes_read": 12946,
-        "p95_ms": 1.994
+        "p95_ms": 1.925
       },
       "golden_match": true,
-      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), uninstrumented p95 95.59 ms -> 1.99 ms (-97.9%) with exact golden SHA-256 parity.",
+      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), uninstrumented p95 80.47 ms -> 1.93 ms (-97.6%) with exact golden SHA-256 parity.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -95,16 +95,16 @@
         "queries_per_req": 6,
         "rows_scanned": 5005,
         "internal_bytes_read": 802086,
-        "p95_ms": 25.683
+        "p95_ms": 26.84
       },
       "after_metrics": {
         "queries_per_req": 2,
         "rows_scanned": 505,
         "internal_bytes_read": 378,
-        "p95_ms": 1.061
+        "p95_ms": 1.099
       },
       "golden_match": true,
-      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows examined 5,005 -> 505 (-89.9% covering index), internal bytes 802.1 KB -> 378 B (-100.0%), uninstrumented p95 25.68 ms -> 1.06 ms (-95.9%).",
+      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows examined 5,005 -> 505 (-89.9% covering index), internal bytes 802.1 KB -> 378 B (-100.0%), uninstrumented p95 26.84 ms -> 1.10 ms (-95.9%).",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -136,17 +136,17 @@
       "workload_id": "order-enrichment",
       "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
       "baseline_metrics": {
-        "p50_ms": 28.627,
-        "p95_ms": 35.634,
+        "p50_ms": 51.872,
+        "p95_ms": 57.2,
         "queries_per_req": 4
       },
       "after_metrics": {
-        "p50_ms": 11.333,
-        "p95_ms": 16.561,
+        "p50_ms": 19.023,
+        "p95_ms": 26.445,
         "queries_per_req": 4
       },
       "golden_match": true,
-      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip uninstrumented p95 dropped 35.63 ms -> 16.56 ms (-53.5%) with identical golden SHA-256.",
+      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip uninstrumented p95 dropped 57.20 ms -> 26.45 ms (-53.8%) with identical golden SHA-256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -180,15 +180,15 @@
       "baseline_metrics": {
         "rows_scanned": 5000,
         "payload_bytes": 641300,
-        "p95_ms": 34.752
+        "p95_ms": 34.362
       },
       "after_metrics": {
         "rows_scanned": 200,
         "payload_bytes": 29900,
-        "p95_ms": 2.592
+        "p95_ms": 3.282
       },
       "golden_match": true,
-      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), uninstrumented p95 34.75 ms -> 2.59 ms (-92.5%) with matching row_ids_sha256.",
+      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), uninstrumented p95 34.36 ms -> 3.28 ms (-90.5%) with matching row_ids_sha256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {

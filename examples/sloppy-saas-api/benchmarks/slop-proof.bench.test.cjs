@@ -8,8 +8,8 @@ const { compareBenchmarks } = require("../../../skills/unslop-backend/compare-be
 
 describe("sloppy-saas-api real node:sqlite & libuv I/O parity proof", () => {
   it("proves real SQLite SCAN -> SEARCH USING INDEX improvements with exact golden parity", async () => {
-    const baseline = await runBenchmark({ mode: "sloppy", iterations: 12, warmup: 3 });
-    const after = await runBenchmark({ mode: "unslopped", iterations: 12, warmup: 3 });
+    const baseline = await runBenchmark({ mode: "sloppy", iterations: 21, warmup: 4 });
+    const after = await runBenchmark({ mode: "unslopped", iterations: 21, warmup: 4 });
 
     const bMap = new Map(baseline.workloads.map((w) => [w.workload_id, w]));
     const aMap = new Map(after.workloads.map((w) => [w.workload_id, w]));

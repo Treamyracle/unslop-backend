@@ -224,8 +224,8 @@ Every finding and unit coverage check maps to one of the 8 canonical classes in 
   "verdict": "fixed",
   "severity": "critical",
   "title": "Eliminated 101-query SQLite N+1 cascade and 755k-row full scans on GET /api/orgs/:orgId/orders",
-  "baseline_metrics": { "queries_per_req": 101, "rows_scanned": 755050, "internal_bytes_read": 178205, "p95_ms": 95.587 },
-  "after_metrics": { "queries_per_req": 3, "rows_scanned": 220, "internal_bytes_read": 12946, "p95_ms": 1.994 },
+  "baseline_metrics": { "queries_per_req": 101, "rows_scanned": 755050, "internal_bytes_read": 178205, "p95_ms": 80.474 },
+  "after_metrics": { "queries_per_req": 3, "rows_scanned": 220, "internal_bytes_read": 12946, "p95_ms": 1.925 },
   "golden_match": true,
   "skeptic_attempted": true,
   "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
@@ -258,10 +258,10 @@ node skills/unslop-backend/scan-slop.cjs examples/sloppy-saas-api/sloppy-server.
 
 | Fixture Workload | Queries (Before → After) | Rows Examined | Payload / Internal Bytes | Uninstrumented p95 | Parity Gate |
 |---|---:|---:|---:|---:|---|
-| `orders-list` | `101 → 3 (-97.0%)` | `755,050 → 220 (-100.0%)` | `178.2 KB → 12.9 KB int (-92.7%)` | `95.59 ms → 1.99 ms (-97.9%)` | `golden_sha256` MATCH |
-| `org-dashboard` | `6 → 2 (-66.7%)` | `5,005 → 505 (-89.9%)` | `802.1 KB → 378 B int (-100.0%)` | `25.68 ms → 1.06 ms (-95.9%)` | `golden_sha256` MATCH |
-| `order-enrichment` | `4 → 4` *(libuv parallel shards)* | `4 → 4` | `390 B → 390 B` | `35.63 ms → 16.56 ms (-53.5%)` | `golden_sha256` MATCH |
-| `orders-export` | `1 → 1` *(SQL `LIMIT 200` + projection)* | `5,000 → 200 (-96.0%)` | `641.3 KB → 29.9 KB HTTP (-95.3%)` | `34.75 ms → 2.59 ms (-92.5%)` | `row_ids_sha256` MATCH |
+| `orders-list` | `101 → 3 (-97.0%)` | `755,050 → 220 (-100.0%)` | `178.2 KB → 12.9 KB int (-92.7%)` | `80.47 ms → 1.93 ms (-97.6%)` | `golden_sha256` MATCH |
+| `org-dashboard` | `6 → 2 (-66.7%)` | `5,005 → 505 (-89.9%)` | `802.1 KB → 378 B int (-100.0%)` | `26.84 ms → 1.10 ms (-95.9%)` | `golden_sha256` MATCH |
+| `order-enrichment` | `4 → 4` *(libuv parallel shards)* | `4 → 4` | `390 B → 390 B` | `57.20 ms → 26.45 ms (-53.8%)` | `golden_sha256` MATCH |
+| `orders-export` | `1 → 1` *(SQL `LIMIT 200` + projection)* | `5,000 → 200 (-96.0%)` | `641.3 KB → 29.9 KB HTTP (-95.3%)` | `34.36 ms → 3.28 ms (-90.5%)` | `row_ids_sha256` MATCH |
 
 ---
 
@@ -334,7 +334,7 @@ See [`docs/STATUS.md`](docs/STATUS.md) for the complete verification matrix:
 
 - ✅ **18/18 unit tests** for the static scanner, ledger validator, benchmark comparator, and findings gate (`node --test`, zero external dependencies)
 - ✅ **Real OSS case study (`louislam/uptime-kuma`)**: reproducible `node:sqlite` suite drops `214 → 7` queries (`-96.7%`) and `314 → 8` queries (`-97.5%`) with exact `golden_sha256` match
-- ✅ **Real SQLite CI fixture (`sloppy-saas-api`)**: `101 → 3` queries, `755,050 → 220` (`orders-list`) & `5,005 → 505` (`org-dashboard`) rows examined, `-53.5%` real libuv `zlib.gunzip` HTTP waterfall p95, `-95.3%` export payload, exact `golden_sha256` / `row_ids_sha256` match
+- ✅ **Real SQLite CI fixture (`sloppy-saas-api`)**: `101 → 3` queries, `755,050 → 220` (`orders-list`) & `5,005 → 505` (`org-dashboard`) rows examined, `-53.8%` real libuv `zlib.gunzip` HTTP waterfall p95, `-95.3%` export payload, exact `golden_sha256` / `row_ids_sha256` match
 - ✅ **Cross-platform CI**: verified across `ubuntu-latest`, `macos-latest`, and `windows-latest` on Node `22` and `24` (6/6 matrix jobs)
 - ⚠️ **Live Postgres/MySQL guard**: running live `EXPLAIN (ANALYZE, BUFFERS)` depends on a local DB instance on the target machine; when unavailable, leads remain `needs_validation` (`severity: null`).
 

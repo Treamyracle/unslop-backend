@@ -66,7 +66,7 @@ function buildEnrichmentShards(shardDir) {
   const pad = "v1_metadata_shard_entry_padding_".repeat(5);
   for (const spec of specs) {
     const lines = [];
-    for (let i = 1; i <= 6000; i += 1) {
+    for (let i = 1; i <= 10000; i += 1) {
       const id = `ord-${String(i).padStart(5, "0")}`;
       lines.push(
         JSON.stringify({
