@@ -49,7 +49,7 @@
   <rect x="396" y="236" width="310" height="7" rx="2" fill="#D4746A"/>
   <rect x="396" y="247" width="310" height="7" rx="2" fill="#F1EFE8"/>
   <rect x="396" y="247" width="9" height="7" rx="2" fill="#116329"/>
-  <text x="736" y="250" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">101 -&gt; 3 queries (-97.0%) · 1.93 ms</text>
+  <text x="736" y="250" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">101 -&gt; 3 queries (-97.0%) · 2.79 ms</text>
   <circle cx="1054" cy="246" r="4" fill="#116329"/>
   <text x="1064" y="250" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
   <line x1="64" y1="269" x2="1136" y2="269" stroke="#ECEAE2" stroke-width="1"/>
@@ -59,7 +59,7 @@
   <rect x="396" y="283" width="310" height="7" rx="2" fill="#D4746A"/>
   <rect x="396" y="294" width="310" height="7" rx="2" fill="#F1EFE8"/>
   <rect x="396" y="294" width="31" height="7" rx="2" fill="#116329"/>
-  <text x="736" y="297" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">5,005 -&gt; 505 rows (-89.9%) · 1.10 ms</text>
+  <text x="736" y="297" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">5,005 -&gt; 505 rows (-89.9%) · 1.29 ms</text>
   <circle cx="1054" cy="293" r="4" fill="#116329"/>
   <text x="1064" y="297" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
   <line x1="64" y1="316" x2="1136" y2="316" stroke="#ECEAE2" stroke-width="1"/>
@@ -69,7 +69,7 @@
   <rect x="396" y="329" width="310" height="7" rx="2" fill="#D4746A"/>
   <rect x="396" y="340" width="310" height="7" rx="2" fill="#F1EFE8"/>
   <rect x="396" y="340" width="14" height="7" rx="2" fill="#116329"/>
-  <text x="736" y="343" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">641 -&gt; 30 KB (-95.3%) · -53.8% p95</text>
+  <text x="736" y="343" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">641 -&gt; 30 KB (-95.3%) · -63.7% p95</text>
   <circle cx="1054" cy="339" r="4" fill="#116329"/>
   <text x="1064" y="343" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">ROW-IDS</text>
 </svg>

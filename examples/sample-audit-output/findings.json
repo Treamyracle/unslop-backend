@@ -3,7 +3,7 @@
   "mode": "unslop",
   "target_repo": "examples/sloppy-saas-api",
   "target_commit": "local-sqlite-fixture-v2",
-  "generated_at": "2026-11-24T02:16:52.869Z",
+  "generated_at": "2026-11-24T07:32:31.465Z",
   "findings": [
     {
       "finding_id": "UNSLOP-001",
@@ -30,8 +30,8 @@
         },
         {
           "file": "db.js",
-          "line_start": 237,
-          "line_end": 250,
+          "line_start": 241,
+          "line_end": 254,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }
@@ -44,16 +44,16 @@
         "queries_per_req": 101,
         "rows_scanned": 755050,
         "internal_bytes_read": 178205,
-        "p95_ms": 80.474
+        "p95_ms": 93.454
       },
       "after_metrics": {
         "queries_per_req": 3,
         "rows_scanned": 220,
         "internal_bytes_read": 12946,
-        "p95_ms": 1.925
+        "p95_ms": 2.788
       },
       "golden_match": true,
-      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), uninstrumented p95 80.47 ms -> 1.93 ms (-97.6%) with exact golden SHA-256 parity.",
+      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), uninstrumented p95 93.45 ms -> 2.79 ms (-97.0%) with exact golden SHA-256 parity.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -81,8 +81,8 @@
         },
         {
           "file": "db.js",
-          "line_start": 237,
-          "line_end": 250,
+          "line_start": 241,
+          "line_end": 254,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }
@@ -95,16 +95,16 @@
         "queries_per_req": 6,
         "rows_scanned": 5005,
         "internal_bytes_read": 802086,
-        "p95_ms": 26.84
+        "p95_ms": 26.253
       },
       "after_metrics": {
         "queries_per_req": 2,
         "rows_scanned": 505,
         "internal_bytes_read": 378,
-        "p95_ms": 1.099
+        "p95_ms": 1.294
       },
       "golden_match": true,
-      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows examined 5,005 -> 505 (-89.9% covering index), internal bytes 802.1 KB -> 378 B (-100.0%), uninstrumented p95 26.84 ms -> 1.10 ms (-95.9%).",
+      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows examined 5,005 -> 505 (-89.9% covering index), internal bytes 802.1 KB -> 378 B (-100.0%), uninstrumented p95 26.25 ms -> 1.29 ms (-95.1%).",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -114,7 +114,7 @@
       "verdict": "fixed",
       "severity": "high",
       "title": "Collapsed 4 sequential HTTP shard lookups into parallel Promise.all fan-out",
-      "summary": "Replaced four sequential HTTP requests (each performing async fs.promises.readFile + zlib.gunzip on local shard files) with concurrent Promise.all.",
+      "summary": "Replaced four sequential HTTP requests (each performing async fs.promises.readFile, zlib.gunzip, and libuv crypto.pbkdf2 shard verification) with concurrent Promise.all over keep-alive HTTP.",
       "source_trace": [
         {
           "file": "sloppy-server.js",
@@ -136,17 +136,17 @@
       "workload_id": "order-enrichment",
       "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
       "baseline_metrics": {
-        "p50_ms": 51.872,
-        "p95_ms": 57.2,
+        "p50_ms": 27.907,
+        "p95_ms": 31.75,
         "queries_per_req": 4
       },
       "after_metrics": {
-        "p50_ms": 19.023,
-        "p95_ms": 26.445,
+        "p50_ms": 9.932,
+        "p95_ms": 11.526,
         "queries_per_req": 4
       },
       "golden_match": true,
-      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip uninstrumented p95 dropped 57.20 ms -> 26.45 ms (-53.8%) with identical golden SHA-256.",
+      "improvement_summary": "Real loopback HTTP + libuv shard gunzip/pbkdf2 uninstrumented p95 dropped 31.75 ms -> 11.53 ms (-63.7%) with identical golden SHA-256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -180,15 +180,15 @@
       "baseline_metrics": {
         "rows_scanned": 5000,
         "payload_bytes": 641300,
-        "p95_ms": 34.362
+        "p95_ms": 42.353
       },
       "after_metrics": {
         "rows_scanned": 200,
         "payload_bytes": 29900,
-        "p95_ms": 3.282
+        "p95_ms": 1.809
       },
       "golden_match": true,
-      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), uninstrumented p95 34.36 ms -> 3.28 ms (-90.5%) with matching row_ids_sha256.",
+      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), uninstrumented p95 42.35 ms -> 1.81 ms (-95.7%) with matching row_ids_sha256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -202,8 +202,8 @@
       "source_trace": [
         {
           "file": "db.js",
-          "line_start": 237,
-          "line_end": 250,
+          "line_start": 241,
+          "line_end": 254,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }

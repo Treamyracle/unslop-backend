@@ -36,10 +36,13 @@ describe("sloppy-saas-api real node:sqlite & libuv I/O parity proof", () => {
     assert.ok(dashA.internal_bytes_read < 10000);
     assert.equal(dashA.golden_sha256, dashB.golden_sha256);
 
-    // 3. Real HTTP + libuv gunzip enrichment waterfall -> Promise.all
+    // 3. Real HTTP + libuv shard verification waterfall -> Promise.all
     const enrB = bMap.get("order-enrichment");
     const enrA = aMap.get("order-enrichment");
-    assert.ok(enrA.p95_ms < enrB.p95_ms * 0.8);
+    assert.ok(
+      enrA.p95_ms < enrB.p95_ms * 0.8,
+      `Expected parallel enrichment p95 (${enrA.p95_ms}ms) < 80% of sequential (${enrB.p95_ms}ms)`
+    );
     assert.equal(enrA.golden_sha256, enrB.golden_sha256);
 
     // 4. Real SQLite blob export -> indexed summary projection

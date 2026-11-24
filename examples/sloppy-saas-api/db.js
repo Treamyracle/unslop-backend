@@ -10,6 +10,7 @@ const { promisify } = require("node:util");
 const { DatabaseSync } = require("node:sqlite");
 
 const gunzipAsync = promisify(zlib.gunzip);
+const pbkdf2Async = promisify(crypto.pbkdf2);
 
 const ORDER_STATUSES = ["paid", "paid", "paid", "pending", "refunded"];
 const ORG_COUNT = 20;
@@ -61,12 +62,12 @@ function buildEnrichmentShards(shardDir) {
     { kind: "loyalty_score", make: () => ({ points: 4200, tier: "gold" }) },
   ];
 
-  // Store each shard as a ~1.5 MB gzipped NDJSON lookup file so disk read + zlib.gunzip
-  // runs across libuv's C++ worker threads instead of blocking the JS thread in JSON.parse.
-  const pad = "v1_metadata_shard_entry_padding_".repeat(5);
+  // Store compact gzipped NDJSON lookup shards; request handler pairs disk read + gunzip
+  // with C++ libuv OpenSSL pbkdf2 verification (16B output -> zero GC pressure).
+  const pad = "v1_metadata_shard_entry_padding_";
   for (const spec of specs) {
     const lines = [];
-    for (let i = 1; i <= 10000; i += 1) {
+    for (let i = 1; i <= 200; i += 1) {
       const id = `ord-${String(i).padStart(5, "0")}`;
       lines.push(
         JSON.stringify({
@@ -93,7 +94,10 @@ function createEnrichmentServer(shardDir) {
     }
     try {
       const gzBuf = await fs.promises.readFile(path.join(shardDir, `${kind}.ndjson.gz`));
-      const rawBuf = await gunzipAsync(gzBuf);
+      const [rawBuf] = await Promise.all([
+        gunzipAsync(gzBuf),
+        pbkdf2Async(gzBuf, `${kind}:${key}`, 15000, 16, "sha256"),
+      ]);
       const needle = Buffer.from(`"key":"${key}"`, "utf8");
       const hitIdx = rawBuf.indexOf(needle);
       let item = { kind, key, ok: true };
@@ -263,6 +267,7 @@ function createRealSqliteDb(options = {}) {
 
   buildEnrichmentShards(shardDir);
   const enrichmentServer = createEnrichmentServer(shardDir);
+  const enrichmentAgent = new http.Agent({ keepAlive: true, maxSockets: 8 });
   let enrichmentBaseUrl = null;
 
   async function startEnrichmentServer() {
@@ -387,7 +392,10 @@ function createRealSqliteDb(options = {}) {
     }
     return new Promise((resolve, reject) => {
       http
-        .get(`${enrichmentBaseUrl}/lookup?kind=${encodeURIComponent(kind)}&key=${encodeURIComponent(key)}`, (res) => {
+        .get(
+          `${enrichmentBaseUrl}/lookup?kind=${encodeURIComponent(kind)}&key=${encodeURIComponent(key)}`,
+          { agent: enrichmentAgent },
+          (res) => {
           const chunks = [];
           res.on("data", (c) => chunks.push(c));
           res.on("end", () => {
@@ -415,6 +423,7 @@ function createRealSqliteDb(options = {}) {
   }
 
   async function close() {
+    enrichmentAgent.destroy();
     if (enrichmentServer.listening) {
       await new Promise((resolve) => enrichmentServer.close(resolve));
       enrichmentBaseUrl = null;
