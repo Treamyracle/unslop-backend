@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "run_id": "uptime-kuma-baseline",
+  "phase": "baseline",
+  "target_commit": "1cc2fa7b1c9ec2be8e610167c8208309283177f2",
+  "captured_at": "2026-11-24T01:22:04.178Z",
+  "cache_mode": "warm",
+  "dataset_rows": 25000,
+  "iterations": 15,
+  "warmup_iterations": 3,
+  "workloads": [
+    {
+      "workload_id": "uptime-kuma-status-page-data",
+      "endpoint_or_task": "StatusPage.getStatusPageData (10 groups, 100 monitors)",
+      "command": "node examples/case-studies/uptime-kuma/reproduce.cjs",
+      "response_status": 200,
+      "golden_sha256": "c12f7e2623e4e2ebc9dbd205f05a4253cbfc1201be6e3da9d9c19079bc1a42a0",
+      "queries_per_req": 214,
+      "rows_scanned": 410504,
+      "internal_bytes_read": 374202,
+      "payload_bytes": 43145,
+      "p50_ms": 43.517,
+      "p95_ms": 63.906,
+      "p99_ms": 63.906,
+      "heap_delta_kb": 3498.23,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SCAN incident | USE TEMP B-TREE FOR ORDER BY | SCAN maintenance_status_page | USE TEMP B-TREE FOR DISTINCT | SCAN group"
+    },
+    {
+      "workload_id": "uptime-kuma-rss-page-data",
+      "endpoint_or_task": "StatusPage.getRSSPageData (100 monitors)",
+      "command": "node examples/case-studies/uptime-kuma/reproduce.cjs",
+      "response_status": 200,
+      "golden_sha256": "0a1d68c93dc8f998dc1c8216f08671f86dfaae3c54e224b10f9517ebaa3a9b06",
+      "queries_per_req": 314,
+      "rows_scanned": 410604,
+      "internal_bytes_read": 385352,
+      "payload_bytes": 9823,
+      "p50_ms": 66.244,
+      "p95_ms": 95.261,
+      "p99_ms": 95.261,
+      "heap_delta_kb": 0,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SCAN incident | USE TEMP B-TREE FOR ORDER BY | SCAN maintenance_status_page | USE TEMP B-TREE FOR DISTINCT | SCAN group"
+    }
+  ]
+}

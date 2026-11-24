@@ -1,0 +1,16 @@
+{
+  "name": "Treamyracle",
+  "description": "Unslop Backend: measurement-first backend performance and data-slop elimination for coding agents",
+  "owner": {
+    "name": "Treamyracle",
+    "url": "https://github.com/Treamyracle"
+  },
+  "plugins": [
+    {
+      "name": "unslop-backend",
+      "source": "./",
+      "description": "Eliminates N+1 query cascades, full table scans, SELECT * payload bloat, in-app aggregation, and async waterfalls, gated by exact golden SHA-256 parity and deterministic before/after benchmarks.",
+      "category": "developer-tools"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Treamyracle",
+  "owner": {
+    "name": "Treamyracle",
+    "url": "https://github.com/Treamyracle"
+  },
+  "metadata": {
+    "description": "Unslop Backend: six-phase measurement-first backend performance and data-slop elimination plugin for Cursor"
+  },
+  "plugins": [
+    {
+      "name": "unslop-backend",
+      "source": "./",
+      "description": "Hunts N+1 queries, full table scans, SELECT * payload bloat, in-app aggregation, and sequential awaits, gated by exact golden SHA-256 parity and deterministic benchmark comparisons.",
+      "category": "developer-tools"
+    }
+  ]
+}

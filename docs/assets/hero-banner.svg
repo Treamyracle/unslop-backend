@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 220" width="920" height="220" role="img" aria-label="unslop-backend banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07131A"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="920" height="220" rx="16" fill="url(#bg)" stroke="#1E293B" stroke-width="1.5"/>
+  <rect x="34" y="32" width="66" height="66" rx="14" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+  <path d="M47 47 L87 47 L73 66 L73 84 L61 78 L61 66 Z" fill="url(#accent)"/>
+  <text x="118" y="64" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.5">unslop-backend</text>
+  <rect x="412" y="38" width="286" height="28" rx="14" fill="#06281E" stroke="#10B981" stroke-width="1"/>
+  <text x="555" y="56" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" font-weight="600">MEASURE · UNSLOP · GOLDEN-VERIFY</text>
+  <text x="118" y="94" fill="#CBD5E1" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15.5">Eliminates N+1 cascades, full table scans, SELECT * bloat &amp; async waterfalls —</text>
+  <text x="118" y="116" fill="#94A3B8" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15.5">every fix is gated by before/after telemetry and exact golden SHA-256 parity.</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">
+    <rect x="34" y="148" width="144" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
+    <text x="106" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">N+1 CASCADES</text>
+    <rect x="190" y="148" width="174" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
+    <text x="277" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">INDEXES &amp; EXPLAIN</text>
+    <rect x="376" y="148" width="164" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
+    <text x="458" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">SELECT * &amp; STREAMS</text>
+    <rect x="552" y="148" width="176" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
+    <text x="640" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">ASYNC WATERFALLS</text>
+    <rect x="740" y="148" width="146" height="34" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+    <text x="813" y="169" text-anchor="middle" fill="#6EE7B7" font-size="11.5">ZERO NPM DEPS</text>
+  </g>
+</svg>

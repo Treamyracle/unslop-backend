@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 286" width="920" height="286" role="img" aria-label="Real SQLite before vs after benchmark scorecard">
+  <defs>
+    <linearGradient id="scoreBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07131A"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+  <rect width="920" height="286" rx="16" fill="url(#scoreBg)" stroke="#1E293B" stroke-width="1.5"/>
+  <text x="28" y="34" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">Real node:sqlite Scorecards (louislam/uptime-kuma + SaaS CI Fixture)</text>
+  <rect x="688" y="14" width="204" height="28" rx="14" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+  <text x="790" y="32" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">GOLDEN SHA-256: MATCH</text>
+
+  <!-- Card 1: uptime-kuma getStatusPageData -->
+  <rect x="28" y="54" width="424" height="100" rx="10" fill="#111C2E" stroke="#10B981" stroke-width="1.2"/>
+  <text x="44" y="76" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">1. uptime-kuma getStatusPageData (94.8k★)</text>
+  <text x="44" y="99" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 214 queries · 410,504 rows · 63.91 ms</text>
+  <text x="44" y="120" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  7 queries (-96.7%) · 915 rows · 5.89 ms</text>
+  <text x="44" y="141" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden SHA-256: MATCH (c12f7e26... · SCAN->SEARCH)</text>
+
+  <!-- Card 2: uptime-kuma getRSSPageData -->
+  <rect x="468" y="54" width="424" height="100" rx="10" fill="#111C2E" stroke="#10B981" stroke-width="1.2"/>
+  <text x="484" y="76" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">2. uptime-kuma getRSSPageData (100 monitors)</text>
+  <text x="484" y="99" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 314 queries · 410,604 rows · 95.26 ms</text>
+  <text x="484" y="120" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  8 queries (-97.5%) · 1,015 rows · 10.40 ms</text>
+  <text x="484" y="141" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden SHA-256: MATCH (0a1d68c9... · 89.1% faster)</text>
+
+  <!-- Card 3: SaaS CI fixture orders + dashboard -->
+  <rect x="28" y="168" width="424" height="100" rx="10" fill="#111C2E" stroke="#1E293B" stroke-width="1"/>
+  <text x="44" y="190" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">3. SaaS CI Fixture: orders-list (node:sqlite)</text>
+  <text x="44" y="213" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 101 queries · 755,050 rows · 92.10 ms</text>
+  <text x="44" y="234" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  3 queries (-97%) · 220 rows · 3.41 ms</text>
+  <text x="44" y="255" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Dashboard agg: 802 KB -> 378 B (-100% int read)</text>
+
+  <!-- Card 4: SaaS CI fixture gunzip + export -->
+  <rect x="468" y="168" width="424" height="100" rx="10" fill="#111C2E" stroke="#1E293B" stroke-width="1"/>
+  <text x="484" y="190" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">4. SaaS CI Fixture: HTTP gunzip + Blob Export</text>
+  <text x="484" y="213" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 37.88 ms waterfall · 641.3 KB export</text>
+  <text x="484" y="234" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  22.46 ms (-40.7%) · 29.9 KB (-95.3%)</text>
+  <text x="484" y="255" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden Match: SHA-256 + row_ids_sha256 verified</text>
+</svg>

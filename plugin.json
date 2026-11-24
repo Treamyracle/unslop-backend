@@ -1,0 +1,11 @@
+{
+  "name": "unslop-backend",
+  "displayName": "Unslop Backend",
+  "description": "Stop vibecoded backends from shipping 200-query N+1 loops and full table scans. Profiles, fixes, and proves SQL, ORM, and API speedups with paired benchmarks and exact golden SHA-256 parity.",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Audit this backend for N+1 queries, missing indexes, SELECT * bloat, and async waterfalls",
+    "Measure baseline query counts and unslop ./src/api without changing API output",
+    "Check whether this ORM repository or endpoint is doing in-app aggregation or sequential awaits"
+  ]
+}

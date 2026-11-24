@@ -1,0 +1,13 @@
+{
+  "name": "unslop-backend",
+  "version": "1.0.0",
+  "description": "Stop vibecoded backends from shipping 200-query N+1 loops and full table scans. Profiles, fixes, and proves SQL, ORM, and API speedups with paired benchmarks and SHA-256 parity.",
+  "author": {
+    "name": "Treamyracle",
+    "url": "https://github.com/Treamyracle"
+  },
+  "homepage": "https://github.com/Treamyracle/unslop-backend",
+  "repository": "https://github.com/Treamyracle/unslop-backend",
+  "license": "MIT",
+  "skills": "./skills/"
+}

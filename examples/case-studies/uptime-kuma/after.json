@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "run_id": "uptime-kuma-unslopped",
+  "phase": "after",
+  "target_commit": "1cc2fa7b1c9ec2be8e610167c8208309283177f2",
+  "captured_at": "2026-11-24T01:22:04.178Z",
+  "cache_mode": "warm",
+  "dataset_rows": 25000,
+  "iterations": 15,
+  "warmup_iterations": 3,
+  "workloads": [
+    {
+      "workload_id": "uptime-kuma-status-page-data",
+      "endpoint_or_task": "StatusPage.getStatusPageData (10 groups, 100 monitors)",
+      "command": "node examples/case-studies/uptime-kuma/reproduce.cjs",
+      "response_status": 200,
+      "golden_sha256": "c12f7e2623e4e2ebc9dbd205f05a4253cbfc1201be6e3da9d9c19079bc1a42a0",
+      "queries_per_req": 7,
+      "rows_scanned": 915,
+      "internal_bytes_read": 185814,
+      "payload_bytes": 43145,
+      "p50_ms": 3.893,
+      "p95_ms": 5.892,
+      "p99_ms": 5.892,
+      "heap_delta_kb": 983.89,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING INDEX idx_maintenance_sp (status_page_id=?) | USE TEMP B-TREE FOR DISTINCT | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?)"
+    },
+    {
+      "workload_id": "uptime-kuma-rss-page-data",
+      "endpoint_or_task": "StatusPage.getRSSPageData (100 monitors)",
+      "command": "node examples/case-studies/uptime-kuma/reproduce.cjs",
+      "response_status": 200,
+      "golden_sha256": "0a1d68c93dc8f998dc1c8216f08671f86dfaae3c54e224b10f9517ebaa3a9b06",
+      "queries_per_req": 8,
+      "rows_scanned": 1015,
+      "internal_bytes_read": 192107,
+      "payload_bytes": 9823,
+      "p50_ms": 8.336,
+      "p95_ms": 10.396,
+      "p99_ms": 10.396,
+      "heap_delta_kb": 5506.03,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING INDEX idx_maintenance_sp (status_page_id=?) | USE TEMP B-TREE FOR DISTINCT | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?)"
+    }
+  ]
+}

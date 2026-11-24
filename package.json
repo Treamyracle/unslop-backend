@@ -1,0 +1,50 @@
+{
+  "name": "unslop-backend",
+  "version": "1.0.0",
+  "description": "Stop vibecoded backends from shipping 200-query N+1 loops and full table scans. An agent skill that profiles, fixes, and proves SQL, ORM, and API speedups with paired benchmarks and SHA-256 parity.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Treamyracle/unslop-backend.git"
+  },
+  "homepage": "https://github.com/Treamyracle/unslop-backend#readme",
+  "bugs": {
+    "url": "https://github.com/Treamyracle/unslop-backend/issues"
+  },
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "claude-code-plugin",
+    "claude-skills",
+    "codex",
+    "cursor",
+    "antigravity",
+    "gemini-cli",
+    "anti-slop",
+    "backend-performance",
+    "sql-optimization",
+    "n-plus-one",
+    "database-performance",
+    "sqlite",
+    "postgresql",
+    "orm",
+    "prisma",
+    "sqlalchemy",
+    "benchmarking",
+    "developer-tools"
+  ],
+  "bin": {
+    "unslop-scan": "./skills/unslop-backend/scan-slop.cjs",
+    "unslop-compare": "./skills/unslop-backend/compare-benchmarks.cjs"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "test:validators": "node --test skills/unslop-backend/scan-slop.test.cjs skills/unslop-backend/validate-workload-ledger.test.cjs skills/unslop-backend/compare-benchmarks.test.cjs skills/unslop-backend/validate-findings.test.cjs",
+    "test:benchmarks": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs examples/case-studies/uptime-kuma/reproduce.test.cjs",
+    "validate:sample": "node skills/unslop-backend/validate-workload-ledger.cjs --repo-root examples/sloppy-saas-api --require-complete examples/sample-audit-output/workload-ledger.json && node skills/unslop-backend/compare-benchmarks.cjs examples/sample-audit-output/baseline.json examples/sample-audit-output/after.json && node skills/unslop-backend/validate-findings.cjs --repo-root examples/sloppy-saas-api --ledger examples/sample-audit-output/workload-ledger.json --baseline examples/sample-audit-output/baseline.json --after examples/sample-audit-output/after.json examples/sample-audit-output/findings.json && node skills/unslop-backend/compare-benchmarks.cjs examples/case-studies/uptime-kuma/baseline.json examples/case-studies/uptime-kuma/after.json",
+    "check:repo": "node scripts/check-repo.cjs",
+    "test": "npm run test:validators && npm run test:benchmarks && npm run validate:sample && npm run check:repo"
+  }
+}

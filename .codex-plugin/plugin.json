@@ -1,0 +1,46 @@
+{
+  "name": "unslop-backend",
+  "version": "1.0.0",
+  "description": "Stop vibecoded backends from shipping 200-query N+1 loops and full table scans. Profiles, fixes, and proves SQL, ORM, and API speedups with paired benchmarks and exact golden SHA-256 parity.",
+  "author": {
+    "name": "Treamyracle",
+    "url": "https://github.com/Treamyracle"
+  },
+  "homepage": "https://github.com/Treamyracle/unslop-backend",
+  "repository": "https://github.com/Treamyracle/unslop-backend",
+  "license": "MIT",
+  "keywords": [
+    "backend-performance",
+    "sql-optimization",
+    "n-plus-one",
+    "benchmarking",
+    "query-plan",
+    "anti-slop",
+    "golden-diff",
+    "agent-skills"
+  ],
+  "skills": "./skills/",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "Unslop Backend",
+    "shortDescription": "Profile, fix, and prove backend & SQL speedups with SHA-256 parity",
+    "longDescription": "Runs a 6-phase Measure -> Hunt -> Unslop -> Prove loop across API routes, ORM repositories, SQL migrations, async jobs, and export streams using zero-dependency benchmark comparators and exact golden SHA-256 verification.",
+    "developerName": "Treamyracle",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Execute",
+      "Verify"
+    ],
+    "websiteURL": "https://github.com/Treamyracle/unslop-backend",
+    "defaultPrompt": [
+      "Audit this backend for N+1 queries, missing indexes, SELECT * bloat, and async waterfalls",
+      "Measure baseline query counts and unslop ./src/api without changing API output",
+      "Check whether this ORM repository or endpoint is doing in-app aggregation or sequential awaits"
+    ],
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png",
+    "brandColor": "#10B981",
+    "screenshots": []
+  }
+}

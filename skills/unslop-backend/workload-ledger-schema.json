@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "unslop-backend workload ledger schema",
+  "type": "object",
+  "required": ["schema_version", "target_repo", "target_commit", "generated_at", "units"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "target_repo": { "type": "string", "minLength": 1 },
+    "target_commit": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "minLength": 1 },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "unit_id",
+          "file",
+          "line_start",
+          "line_end",
+          "surface_type",
+          "status",
+          "checked_classes",
+          "hunter_run_id"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" },
+          "file": { "type": "string", "minLength": 1 },
+          "line_start": { "type": "integer", "minimum": 1 },
+          "line_end": { "type": "integer", "minimum": 1 },
+          "surface_type": {
+            "enum": [
+              "http_route",
+              "graphql_resolver",
+              "rpc_handler",
+              "orm_repository",
+              "raw_sql",
+              "migration_index",
+              "background_job",
+              "export_stream",
+              "ai_pipeline",
+              "serverless_entry"
+            ]
+          },
+          "status": {
+            "enum": ["unassigned", "covered", "prior_covered_same_source", "out_of_scope"]
+          },
+          "checked_classes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "n_plus_one_cascade",
+                "missing_or_broken_index",
+                "overfetch_and_payload_bloat",
+                "in_app_aggregation",
+                "async_waterfall",
+                "connection_and_tx_bloat",
+                "memory_and_stream_slop",
+                "cold_start_and_bundle_slop"
+              ]
+            }
+          },
+          "hunter_run_id": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

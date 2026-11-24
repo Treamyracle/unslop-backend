@@ -1,0 +1,239 @@
+{
+  "schema_version": "1.0",
+  "mode": "unslop",
+  "target_repo": "examples/sloppy-saas-api",
+  "target_commit": "local-sqlite-fixture-v2",
+  "generated_at": "2026-11-24T01:20:50.000Z",
+  "findings": [
+    {
+      "finding_id": "UNSLOP-001",
+      "unit_id": "orders-list",
+      "slop_class": "n_plus_one_cascade",
+      "verdict": "fixed",
+      "severity": "critical",
+      "title": "Eliminated 101-query SQLite N+1 cascade and 755k-row full scans on GET /api/orgs/:orgId/orders",
+      "summary": "Replaced SCAN orders + USE TEMP B-TREE + 100 per-order user/order_items queries (each scanning 15,000 order_items) with composite index idx_orders_org_status_created, idx_order_items_order_id, and batched WHERE id IN (...) lookups.",
+      "source_trace": [
+        {
+          "file": "sloppy-server.js",
+          "line_start": 26,
+          "line_end": 44,
+          "symbol": "ordersMatch N+1 loop",
+          "role": "entrypoint"
+        },
+        {
+          "file": "unslopped-server.js",
+          "line_start": 22,
+          "line_end": 53,
+          "symbol": "ordersMatch batched IN queries",
+          "role": "fix_site"
+        },
+        {
+          "file": "db.js",
+          "line_start": 236,
+          "line_end": 247,
+          "symbol": "applyOptimizationIndexes",
+          "role": "guard_or_index"
+        }
+      ],
+      "skeptic_attempted": true,
+      "skeptic_notes": "Verified SQLite EXPLAIN QUERY PLAN shifted from SCAN orders + SCAN order_items to SEARCH USING INDEX, identical tie-breaker order, and exact golden_sha256 match.",
+      "workload_id": "orders-list",
+      "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
+      "baseline_metrics": {
+        "queries_per_req": 101,
+        "rows_scanned": 755050,
+        "internal_bytes_read": 178205,
+        "p95_ms": 92.102
+      },
+      "after_metrics": {
+        "queries_per_req": 3,
+        "rows_scanned": 220,
+        "internal_bytes_read": 12946,
+        "p95_ms": 3.406
+      },
+      "golden_match": true,
+      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), p95 92.10 ms -> 3.41 ms (-96.3%) with exact golden SHA-256 parity.",
+      "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
+    },
+    {
+      "finding_id": "UNSLOP-002",
+      "unit_id": "org-dashboard",
+      "slop_class": "in_app_aggregation",
+      "verdict": "fixed",
+      "severity": "high",
+      "title": "Replaced SELECT * full-table load and JS aggregation with indexed SQL aggregation on GET /api/orgs/:orgId/dashboard",
+      "summary": "Replaced pulling 5,000 orders + 3 KB blobs into JS with SQLite SUM/COUNT aggregation and JOINed top-5 GROUP BY backed by idx_orders_org_created and idx_orders_org_status_created.",
+      "source_trace": [
+        {
+          "file": "sloppy-server.js",
+          "line_start": 53,
+          "line_end": 83,
+          "symbol": "dashMatch in-app aggregation",
+          "role": "aggregation"
+        },
+        {
+          "file": "unslopped-server.js",
+          "line_start": 76,
+          "line_end": 99,
+          "symbol": "dashMatch SQL SUM/GROUP BY",
+          "role": "fix_site"
+        },
+        {
+          "file": "db.js",
+          "line_start": 236,
+          "line_end": 247,
+          "symbol": "applyOptimizationIndexes",
+          "role": "guard_or_index"
+        }
+      ],
+      "skeptic_attempted": true,
+      "skeptic_notes": "Confirmed COALESCE zero-row safety, deterministic user_id ASC tie-breaking, and exact golden_sha256 match.",
+      "workload_id": "org-dashboard",
+      "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
+      "baseline_metrics": {
+        "queries_per_req": 6,
+        "rows_scanned": 5005,
+        "internal_bytes_read": 802086,
+        "p95_ms": 36.318
+      },
+      "after_metrics": {
+        "queries_per_req": 2,
+        "rows_scanned": 11,
+        "internal_bytes_read": 378,
+        "p95_ms": 2.121
+      },
+      "golden_match": true,
+      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows scanned 5,005 -> 11 (-99.8%), internal bytes 802.1 KB -> 378 B (-100.0%), p95 36.32 ms -> 2.12 ms (-94.2%).",
+      "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
+    },
+    {
+      "finding_id": "UNSLOP-003",
+      "unit_id": "order-enrichment",
+      "slop_class": "async_waterfall",
+      "verdict": "fixed",
+      "severity": "high",
+      "title": "Collapsed 4 sequential HTTP shard lookups into parallel Promise.all fan-out",
+      "summary": "Replaced four sequential HTTP requests (each performing async fs.promises.readFile + zlib.gunzip on local shard files) with concurrent Promise.all.",
+      "source_trace": [
+        {
+          "file": "sloppy-server.js",
+          "line_start": 101,
+          "line_end": 104,
+          "symbol": "enrichMatch sequential awaits",
+          "role": "query_or_io"
+        },
+        {
+          "file": "unslopped-server.js",
+          "line_start": 120,
+          "line_end": 125,
+          "symbol": "Promise.all enrichment fan-out",
+          "role": "fix_site"
+        }
+      ],
+      "skeptic_attempted": true,
+      "skeptic_notes": "Verified all 4 lookups depend only on orderId and return exact golden_sha256 equivalence.",
+      "workload_id": "order-enrichment",
+      "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
+      "baseline_metrics": {
+        "p50_ms": 29.679,
+        "p95_ms": 37.88,
+        "queries_per_req": 4
+      },
+      "after_metrics": {
+        "p50_ms": 15.969,
+        "p95_ms": 22.463,
+        "queries_per_req": 4
+      },
+      "golden_match": true,
+      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip p95 dropped 37.88 ms -> 22.46 ms (-40.7%) with identical golden SHA-256.",
+      "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
+    },
+    {
+      "finding_id": "UNSLOP-004",
+      "unit_id": "orders-export",
+      "slop_class": "overfetch_and_payload_bloat",
+      "verdict": "fixed",
+      "severity": "high",
+      "title": "Removed SELECT * blob dump and JSON.parse(JSON.stringify) loop on orders export",
+      "summary": "Switched to explicit column projection backed by idx_orders_org_created and dropped redundant per-row deep cloning.",
+      "source_trace": [
+        {
+          "file": "sloppy-server.js",
+          "line_start": 124,
+          "line_end": 135,
+          "symbol": "exportMatch",
+          "role": "entrypoint"
+        },
+        {
+          "file": "unslopped-server.js",
+          "line_start": 145,
+          "line_end": 151,
+          "symbol": "exportMatch projected SQL",
+          "role": "fix_site"
+        }
+      ],
+      "skeptic_attempted": true,
+      "skeptic_notes": "Approved projection drops unused raw_webhook_payload and audit_trail internal blobs while matching row_ids_sha256 identically.",
+      "workload_id": "orders-export",
+      "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
+      "baseline_metrics": {
+        "rows_scanned": 5000,
+        "payload_bytes": 641300,
+        "p95_ms": 64.905
+      },
+      "after_metrics": {
+        "rows_scanned": 200,
+        "payload_bytes": 29900,
+        "p95_ms": 4.965
+      },
+      "golden_match": true,
+      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), p95 64.91 ms -> 4.97 ms (-92.3%) with matching row_ids_sha256.",
+      "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
+    },
+    {
+      "finding_id": "UNSLOP-005",
+      "unit_id": "db-access-layer",
+      "slop_class": "missing_or_broken_index",
+      "verdict": "needs_validation",
+      "severity": null,
+      "title": "PostgreSQL EXPLAIN (ANALYZE, BUFFERS) verification for multi-column index under MVCC",
+      "summary": "Fixture verifies SQLite B-tree query plans locally; production PostgreSQL shared_buffers and autovacuum visibility-map behavior requires a local Postgres instance.",
+      "source_trace": [
+        {
+          "file": "db.js",
+          "line_start": 236,
+          "line_end": 247,
+          "symbol": "applyOptimizationIndexes",
+          "role": "guard_or_index"
+        }
+      ],
+      "skeptic_attempted": false,
+      "skeptic_notes": "CI runs pure node:sqlite with zero external Postgres service.",
+      "unresolved_fact": "PostgreSQL Heap Fetches and Index-Only Scan efficiency for idx_orders_org_status_created under concurrent writes.",
+      "safe_verification_recipe": "Run EXPLAIN (ANALYZE, BUFFERS) on a disposable local Postgres instance (>=100k rows) before and after CREATE INDEX CONCURRENTLY."
+    },
+    {
+      "finding_id": "UNSLOP-006",
+      "unit_id": "orders-list",
+      "slop_class": "memory_and_stream_slop",
+      "verdict": "rejected",
+      "severity": null,
+      "title": "Rejected candidate: NDJSON streaming rewrite on limit=50 orders list",
+      "summary": "Converting the 10.5 KB 50-item paginated JSON payload to chunked NDJSON streaming would break the JSON array contract for zero meaningful memory gain.",
+      "source_trace": [
+        {
+          "file": "unslopped-server.js",
+          "line_start": 55,
+          "line_end": 71,
+          "symbol": "ordersMatch JSON serialization",
+          "role": "entrypoint"
+        }
+      ],
+      "skeptic_attempted": true,
+      "skeptic_notes": "Confirmed response is already bounded at 10,572 bytes via limit=50 and column projection.",
+      "rejection_reason": "Payload is already bounded at 10.5 KB and streaming alters API framing.",
+      "mitigating_evidence": "unslopped-server.js:22-71 limits rows to 50 and omits large webhook/audit columns."
+    }
+  ]
+}

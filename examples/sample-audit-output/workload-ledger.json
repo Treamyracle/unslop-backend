@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "target_repo": "examples/sloppy-saas-api",
+  "target_commit": "local-sqlite-fixture-v2",
+  "generated_at": "2026-11-24T01:20:50.000Z",
+  "units": [
+    {
+      "unit_id": "orders-list",
+      "file": "sloppy-server.js",
+      "line_start": 20,
+      "line_end": 48,
+      "surface_type": "http_route",
+      "status": "covered",
+      "checked_classes": [
+        "n_plus_one_cascade",
+        "missing_or_broken_index",
+        "overfetch_and_payload_bloat"
+      ],
+      "hunter_run_id": "hunter-routes-1"
+    },
+    {
+      "unit_id": "org-dashboard",
+      "file": "sloppy-server.js",
+      "line_start": 50,
+      "line_end": 96,
+      "surface_type": "http_route",
+      "status": "covered",
+      "checked_classes": [
+        "in_app_aggregation",
+        "overfetch_and_payload_bloat",
+        "n_plus_one_cascade",
+        "missing_or_broken_index"
+      ],
+      "hunter_run_id": "hunter-routes-1"
+    },
+    {
+      "unit_id": "order-enrichment",
+      "file": "sloppy-server.js",
+      "line_start": 98,
+      "line_end": 118,
+      "surface_type": "http_route",
+      "status": "covered",
+      "checked_classes": [
+        "async_waterfall",
+        "connection_and_tx_bloat"
+      ],
+      "hunter_run_id": "hunter-io-1"
+    },
+    {
+      "unit_id": "orders-export",
+      "file": "sloppy-server.js",
+      "line_start": 120,
+      "line_end": 141,
+      "surface_type": "export_stream",
+      "status": "covered",
+      "checked_classes": [
+        "overfetch_and_payload_bloat",
+        "memory_and_stream_slop",
+        "missing_or_broken_index"
+      ],
+      "hunter_run_id": "hunter-exports-1"
+    },
+    {
+      "unit_id": "db-access-layer",
+      "file": "db.js",
+      "line_start": 236,
+      "line_end": 345,
+      "surface_type": "orm_repository",
+      "status": "covered",
+      "checked_classes": [
+        "missing_or_broken_index",
+        "overfetch_and_payload_bloat",
+        "in_app_aggregation"
+      ],
+      "hunter_run_id": "hunter-db-1"
+    },
+    {
+      "unit_id": "benchmark-harness",
+      "file": "benchmarks/run-benchmark.cjs",
+      "line_start": 1,
+      "line_end": 150,
+      "surface_type": "serverless_entry",
+      "status": "out_of_scope",
+      "checked_classes": [],
+      "hunter_run_id": "",
+      "notes": "Local loopback benchmark runner; not an application runtime surface."
+    }
+  ]
+}
