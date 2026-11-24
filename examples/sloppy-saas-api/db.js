@@ -126,6 +126,7 @@ function createEnrichmentServer(shardDir) {
 function createRealSqliteDb(options = {}) {
   const seed = options.seed ?? 20261124;
   const withIndexes = Boolean(options.withIndexes);
+  const forceFallbackStats = Boolean(options.forceFallbackStats);
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "unslop-saas-sqlite-"));
   const dbPath = path.join(tmpDir, "saas.sqlite");
   const shardDir = path.join(tmpDir, "enrichment-shards");
@@ -239,6 +240,8 @@ function createRealSqliteDb(options = {}) {
         ON orders (org_id, status, created_at DESC, id DESC);
       CREATE INDEX IF NOT EXISTS idx_orders_org_created
         ON orders (org_id, created_at DESC, id DESC);
+      CREATE INDEX IF NOT EXISTS idx_orders_org_status_user_total
+        ON orders (org_id, status, user_id, total_cents);
       CREATE INDEX IF NOT EXISTS idx_order_items_order_id
         ON order_items (order_id);
     `);
@@ -285,36 +288,91 @@ function createRealSqliteDb(options = {}) {
     return s;
   }
 
-  function recordPlanAndScan(tracker, sql, rowsReturnedCount, bytesRead) {
+  function countIndexedAggregateRows(sql, params, rowsReturnedCount) {
+    // Handles both top-level aggregates (SELECT COUNT/SUM FROM orders WHERE ...) and the top-5 subquery pattern
+    const aggSubMatch = sql.match(/FROM\s*\(\s*SELECT[\s\S]+?\bFROM\s+(orders\s+WHERE[\s\S]+?)\bGROUP\s+BY\b/i);
+    if (aggSubMatch) {
+      const countSql = `SELECT COUNT(*) AS c FROM ${aggSubMatch[1].trim()}`;
+      const qMarks = (countSql.match(/\?/g) || []).length;
+      const cRow = sqlite.prepare(countSql).get(...params.slice(0, qMarks));
+      return (cRow ? Number(cRow.c) : 0) + rowsReturnedCount;
+    }
+    const aggMatch = sql.match(/\bFROM\s+([\s\S]+?)(?=\b(?:GROUP\s+BY|ORDER\s+BY|LIMIT)\b|$)/i);
+    if (aggMatch && /\b(?:COUNT|SUM|AVG|MIN|MAX)\s*\(/i.test(sql)) {
+      const countSql = `SELECT COUNT(*) AS c FROM ${aggMatch[1].trim()}`;
+      const qMarks = (countSql.match(/\?/g) || []).length;
+      const cRow = sqlite.prepare(countSql).get(...params.slice(0, qMarks));
+      return cRow ? Number(cRow.c) : rowsReturnedCount;
+    }
+    return null;
+  }
+
+  function recordPlanAndScan(tracker, sql, params, rowsReturnedCount, bytesRead, fsSteps) {
     tracker.queryCount += 1;
     tracker.internalBytesRead += bytesRead;
+    if (typeof fsSteps === "number") {
+      tracker.fullscanSteps += fsSteps;
+    }
     const details = getPlanDetails(sql);
-    let scannedHere = 0;
+    let scanTables = 0;
+    let searchNodes = 0;
+    let scanFallback = 0;
 
     for (const detail of details) {
+      if (/\b(?:CO-ROUTINE|SCAN agg)\b/.test(detail)) {
+        tracker.plans.add(detail);
+        continue;
+      }
       tracker.plans.add(detail);
       const scanMatch = detail.match(/\bSCAN\s+([A-Za-z0-9_"]+)/);
       if (scanMatch) {
         const tbl = scanMatch[1].replace(/"/g, "");
-        scannedHere += tableCounts[tbl] || rowsReturnedCount;
+        if (Object.prototype.hasOwnProperty.call(tableCounts, tbl)) {
+          scanTables += 1;
+          scanFallback += tableCounts[tbl];
+        }
       } else if (/\bSEARCH\b/.test(detail)) {
-        scannedHere += Math.max(1, rowsReturnedCount);
+        searchNodes += 1;
       }
     }
+
+    let scannedHere = 0;
+    if (typeof fsSteps === "number" && scanTables > 0) {
+      const initRows = rowsReturnedCount > 0 || scanFallback > 0 ? scanTables : 0;
+      scannedHere = fsSteps + initRows + searchNodes * rowsReturnedCount;
+    } else if (scanTables > 0) {
+      scannedHere = scanFallback + searchNodes * rowsReturnedCount;
+    } else if (searchNodes > 0) {
+      const aggCount = countIndexedAggregateRows(sql, params, rowsReturnedCount);
+      scannedHere = aggCount !== null ? aggCount : Math.max(1, rowsReturnedCount);
+    }
+
     tracker.rowsScanned += Math.max(rowsReturnedCount, scannedHere);
   }
 
   function queryAll(tracker, sql, params = []) {
-    const rows = getStmt(sql).all(...params);
-    const bytes = estimateBytes(rows);
-    recordPlanAndScan(tracker, sql, rows.length, bytes);
+    const stmt = getStmt(sql);
+    if (!tracker) {
+      return stmt.all(...params);
+    }
+    const useStat = !forceFallbackStats && typeof stmt.stat === "function";
+    if (useStat) stmt.resetStats();
+    const rows = stmt.all(...params);
+    const fsSteps = useStat ? stmt.stat("fullscanStep") : null;
+    recordPlanAndScan(tracker, sql, params, rows.length, estimateBytes(rows), fsSteps);
     return rows;
   }
 
   function queryGet(tracker, sql, params = []) {
-    const row = getStmt(sql).get(...params) || null;
-    const bytes = row ? estimateBytes(row) : 0;
-    recordPlanAndScan(tracker, sql, row ? 1 : 0, bytes);
+    const stmt = getStmt(sql);
+    if (!tracker) {
+      return stmt.get(...params) || null;
+    }
+    const useStat = !forceFallbackStats && typeof stmt.stat === "function";
+    if (useStat) stmt.resetStats();
+    const row = stmt.get(...params) || null;
+    const fsSteps = useStat ? stmt.stat("fullscanStep") : null;
+    recordPlanAndScan(tracker, sql, params, row ? 1 : 0, row ? estimateBytes(row) : 0, fsSteps);
     return row;
   }
 
@@ -322,9 +380,11 @@ function createRealSqliteDb(options = {}) {
     if (!enrichmentBaseUrl) {
       throw new Error("Enrichment server not started; call await db.start() first");
     }
-    tracker.queryCount += 1;
-    tracker.rowsScanned += 1;
-    tracker.plans.add("LOCAL_HTTP_GUNZIP_SHARD");
+    if (tracker) {
+      tracker.queryCount += 1;
+      tracker.rowsScanned += 1;
+      tracker.plans.add("LOCAL_HTTP_GUNZIP_SHARD");
+    }
     return new Promise((resolve, reject) => {
       http
         .get(`${enrichmentBaseUrl}/lookup?kind=${encodeURIComponent(kind)}&key=${encodeURIComponent(key)}`, (res) => {
@@ -332,7 +392,7 @@ function createRealSqliteDb(options = {}) {
           res.on("data", (c) => chunks.push(c));
           res.on("end", () => {
             const buf = Buffer.concat(chunks);
-            tracker.internalBytesRead += buf.length;
+            if (tracker) tracker.internalBytesRead += buf.length;
             try {
               resolve(JSON.parse(buf.toString("utf8")));
             } catch (err) {
@@ -349,6 +409,7 @@ function createRealSqliteDb(options = {}) {
       queryCount: 0,
       rowsScanned: 0,
       internalBytesRead: 0,
+      fullscanSteps: 0,
       plans: new Set(),
     };
   }

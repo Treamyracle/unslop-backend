@@ -41,11 +41,11 @@ const WORKLOAD_DEFS = [
   },
 ];
 
-function requestJson(baseUrl, reqPath) {
+function requestJson(baseUrl, reqPath, headers = {}) {
   return new Promise((resolve, reject) => {
     const start = process.hrtime.bigint();
     http
-      .get(`${baseUrl}${reqPath}`, (res) => {
+      .get(`${baseUrl}${reqPath}`, { headers }, (res) => {
         const chunks = [];
         res.on("data", (chunk) => chunks.push(chunk));
         res.on("end", () => {
@@ -95,10 +95,11 @@ function computeRowIdsHash(body) {
   return canonicalJsonSha256({ org_id: body.org_id, rows: projection });
 }
 
-async function runBenchmark({ mode, iterations = 15, warmup = 3 }) {
+async function runBenchmark({ mode, iterations = 15, warmup = 3, forceFallbackStats = false } = {}) {
   const db = createRealSqliteDb({
     seed: 20261124,
     withIndexes: mode === "unslopped",
+    forceFallbackStats,
   });
   await db.start();
 
@@ -117,11 +118,11 @@ async function runBenchmark({ mode, iterations = 15, warmup = 3 }) {
 
       const durations = [];
       const heapBefore = process.memoryUsage().heapUsed;
-      let lastRes = null;
+      let lastTimedRes = null;
 
       for (let i = 0; i < iterations; i += 1) {
-        lastRes = await requestJson(baseUrl, def.path);
-        durations.push(lastRes.durationMs);
+        lastTimedRes = await requestJson(baseUrl, def.path);
+        durations.push(lastTimedRes.durationMs);
       }
 
       const heapDeltaKb = Number(
@@ -129,24 +130,30 @@ async function runBenchmark({ mode, iterations = 15, warmup = 3 }) {
       );
       durations.sort((a, b) => a - b);
 
+      // Separate un-timed telemetry request so EXPLAIN/JSON byte counting never slows measured latency
+      const telemetryRes = await requestJson(baseUrl, def.path, { "x-unslop-telemetry": "1" });
+      if (canonicalJsonSha256(lastTimedRes.body) !== canonicalJsonSha256(telemetryRes.body)) {
+        throw new Error(`Timed vs telemetry parity drift on ${def.workload_id}`);
+      }
+
       const entry = {
         workload_id: def.workload_id,
         endpoint_or_task: def.endpoint_or_task,
         command: `node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode ${mode}`,
-        response_status: lastRes.status,
-        golden_sha256: canonicalJsonSha256(lastRes.body),
-        queries_per_req: lastRes.queries,
-        rows_scanned: lastRes.rowsScanned,
-        internal_bytes_read: lastRes.internalBytes,
-        payload_bytes: lastRes.payloadBytes,
+        response_status: telemetryRes.status,
+        golden_sha256: canonicalJsonSha256(telemetryRes.body),
+        queries_per_req: telemetryRes.queries,
+        rows_scanned: telemetryRes.rowsScanned,
+        internal_bytes_read: telemetryRes.internalBytes,
+        payload_bytes: telemetryRes.payloadBytes,
         p50_ms: percentile(durations, 50),
         p95_ms: percentile(durations, 95),
         p99_ms: percentile(durations, 99),
         heap_delta_kb: heapDeltaKb,
-        explain_plan_type: lastRes.plan,
+        explain_plan_type: telemetryRes.plan,
       };
 
-      const rowIdsHash = computeRowIdsHash(lastRes.body);
+      const rowIdsHash = computeRowIdsHash(telemetryRes.body);
       if (rowIdsHash) {
         entry.row_ids_sha256 = rowIdsHash;
       }

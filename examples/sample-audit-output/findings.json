@@ -3,7 +3,7 @@
   "mode": "unslop",
   "target_repo": "examples/sloppy-saas-api",
   "target_commit": "local-sqlite-fixture-v2",
-  "generated_at": "2026-11-24T01:20:50.000Z",
+  "generated_at": "2026-11-24T02:16:52.869Z",
   "findings": [
     {
       "finding_id": "UNSLOP-001",
@@ -30,30 +30,30 @@
         },
         {
           "file": "db.js",
-          "line_start": 236,
-          "line_end": 247,
+          "line_start": 237,
+          "line_end": 250,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }
       ],
       "skeptic_attempted": true,
-      "skeptic_notes": "Verified SQLite EXPLAIN QUERY PLAN shifted from SCAN orders + SCAN order_items to SEARCH USING INDEX, identical tie-breaker order, and exact golden_sha256 match.",
+      "skeptic_notes": "Verified SQLite EXPLAIN QUERY PLAN shifted from SCAN orders + SCAN order_items to SEARCH USING INDEX, identical tie-breaker order, uncontaminated HTTP timing, and exact golden_sha256 match.",
       "workload_id": "orders-list",
       "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
       "baseline_metrics": {
         "queries_per_req": 101,
         "rows_scanned": 755050,
         "internal_bytes_read": 178205,
-        "p95_ms": 92.102
+        "p95_ms": 95.587
       },
       "after_metrics": {
         "queries_per_req": 3,
         "rows_scanned": 220,
         "internal_bytes_read": 12946,
-        "p95_ms": 3.406
+        "p95_ms": 1.994
       },
       "golden_match": true,
-      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), p95 92.10 ms -> 3.41 ms (-96.3%) with exact golden SHA-256 parity.",
+      "improvement_summary": "SQLite queries 101 -> 3 (-97.0%), rows scanned 755,050 -> 220 (-100.0%), internal bytes 178.2 KB -> 12.9 KB (-92.7%), uninstrumented p95 95.59 ms -> 1.99 ms (-97.9%) with exact golden SHA-256 parity.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -62,8 +62,8 @@
       "slop_class": "in_app_aggregation",
       "verdict": "fixed",
       "severity": "high",
-      "title": "Replaced SELECT * full-table load and JS aggregation with indexed SQL aggregation on GET /api/orgs/:orgId/dashboard",
-      "summary": "Replaced pulling 5,000 orders + 3 KB blobs into JS with SQLite SUM/COUNT aggregation and JOINed top-5 GROUP BY backed by idx_orders_org_created and idx_orders_org_status_created.",
+      "title": "Replaced SELECT * full-table load and JS aggregation with covering-index SQL aggregation on GET /api/orgs/:orgId/dashboard",
+      "summary": "Replaced pulling 5,000 orders + 3 KB blobs into JS with covering-index SQLite SUM/COUNT aggregation and top-5 subquery GROUP BY backed by idx_orders_org_status_user_total.",
       "source_trace": [
         {
           "file": "sloppy-server.js",
@@ -75,36 +75,36 @@
         {
           "file": "unslopped-server.js",
           "line_start": 76,
-          "line_end": 99,
+          "line_end": 103,
           "symbol": "dashMatch SQL SUM/GROUP BY",
           "role": "fix_site"
         },
         {
           "file": "db.js",
-          "line_start": 236,
-          "line_end": 247,
+          "line_start": 237,
+          "line_end": 250,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }
       ],
       "skeptic_attempted": true,
-      "skeptic_notes": "Confirmed COALESCE zero-row safety, deterministic user_id ASC tie-breaking, and exact golden_sha256 match.",
+      "skeptic_notes": "Confirmed COALESCE zero-row safety, deterministic user_id ASC tie-breaking, honest index-entry scan accounting (250 + 255 = 505 examined rows), and exact golden_sha256 match.",
       "workload_id": "org-dashboard",
       "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
       "baseline_metrics": {
         "queries_per_req": 6,
         "rows_scanned": 5005,
         "internal_bytes_read": 802086,
-        "p95_ms": 36.318
+        "p95_ms": 25.683
       },
       "after_metrics": {
         "queries_per_req": 2,
-        "rows_scanned": 11,
+        "rows_scanned": 505,
         "internal_bytes_read": 378,
-        "p95_ms": 2.121
+        "p95_ms": 1.061
       },
       "golden_match": true,
-      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows scanned 5,005 -> 11 (-99.8%), internal bytes 802.1 KB -> 378 B (-100.0%), p95 36.32 ms -> 2.12 ms (-94.2%).",
+      "improvement_summary": "Queries 6 -> 2 (-66.7%), rows examined 5,005 -> 505 (-89.9% covering index), internal bytes 802.1 KB -> 378 B (-100.0%), uninstrumented p95 25.68 ms -> 1.06 ms (-95.9%).",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -125,8 +125,8 @@
         },
         {
           "file": "unslopped-server.js",
-          "line_start": 120,
-          "line_end": 125,
+          "line_start": 124,
+          "line_end": 129,
           "symbol": "Promise.all enrichment fan-out",
           "role": "fix_site"
         }
@@ -136,17 +136,17 @@
       "workload_id": "order-enrichment",
       "benchmark_command": "node examples/sloppy-saas-api/benchmarks/run-benchmark.cjs --mode unslopped",
       "baseline_metrics": {
-        "p50_ms": 29.679,
-        "p95_ms": 37.88,
+        "p50_ms": 28.627,
+        "p95_ms": 35.634,
         "queries_per_req": 4
       },
       "after_metrics": {
-        "p50_ms": 15.969,
-        "p95_ms": 22.463,
+        "p50_ms": 11.333,
+        "p95_ms": 16.561,
         "queries_per_req": 4
       },
       "golden_match": true,
-      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip p95 dropped 37.88 ms -> 22.46 ms (-40.7%) with identical golden SHA-256.",
+      "improvement_summary": "Real loopback HTTP + libuv zlib.gunzip uninstrumented p95 dropped 35.63 ms -> 16.56 ms (-53.5%) with identical golden SHA-256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -167,8 +167,8 @@
         },
         {
           "file": "unslopped-server.js",
-          "line_start": 145,
-          "line_end": 151,
+          "line_start": 149,
+          "line_end": 155,
           "symbol": "exportMatch projected SQL",
           "role": "fix_site"
         }
@@ -180,15 +180,15 @@
       "baseline_metrics": {
         "rows_scanned": 5000,
         "payload_bytes": 641300,
-        "p95_ms": 64.905
+        "p95_ms": 34.752
       },
       "after_metrics": {
         "rows_scanned": 200,
         "payload_bytes": 29900,
-        "p95_ms": 4.965
+        "p95_ms": 2.592
       },
       "golden_match": true,
-      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), p95 64.91 ms -> 4.97 ms (-92.3%) with matching row_ids_sha256.",
+      "improvement_summary": "HTTP payload dropped 641.3 KB -> 29.9 KB (-95.3%), rows scanned 5,000 -> 200 (-96.0%), uninstrumented p95 34.75 ms -> 2.59 ms (-92.5%) with matching row_ids_sha256.",
       "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
     },
     {
@@ -202,8 +202,8 @@
       "source_trace": [
         {
           "file": "db.js",
-          "line_start": 236,
-          "line_end": 247,
+          "line_start": 237,
+          "line_end": 250,
           "symbol": "applyOptimizationIndexes",
           "role": "guard_or_index"
         }
@@ -224,8 +224,8 @@
       "source_trace": [
         {
           "file": "unslopped-server.js",
-          "line_start": 55,
-          "line_end": 71,
+          "line_start": 56,
+          "line_end": 70,
           "symbol": "ordersMatch JSON serialization",
           "role": "entrypoint"
         }
@@ -233,7 +233,7 @@
       "skeptic_attempted": true,
       "skeptic_notes": "Confirmed response is already bounded at 10,572 bytes via limit=50 and column projection.",
       "rejection_reason": "Payload is already bounded at 10.5 KB and streaming alters API framing.",
-      "mitigating_evidence": "unslopped-server.js:22-71 limits rows to 50 and omits large webhook/audit columns."
+      "mitigating_evidence": "unslopped-server.js:22-70 limits rows to 50 and omits large webhook/audit columns."
     }
   ]
 }

@@ -36,7 +36,7 @@
   <rect x="688" y="82" width="3" height="76" rx="1" fill="#B42318"/>
   <text x="704" y="96" fill="#B42318" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">BEFORE · StatusPage.getStatusPageData</text>
   <text x="704" y="126" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" font-weight="700">214 queries</text>
-  <text x="886" y="124" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">410,504 rows · 63.9 ms</text>
+  <text x="886" y="124" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">315,554 rows · 50.7 ms</text>
   <rect x="704" y="138" width="420" height="8" rx="2" fill="#B42318"/>
   <text x="704" y="160" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">EXPLAIN: SCAN mt (x100) · SCAN monitor_tls_info</text>
 
@@ -47,7 +47,7 @@
   <text x="704" y="206" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">AFTER · batched IN + composite indexes</text>
   <text x="704" y="236" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" font-weight="700">7 queries</text>
   <text x="836" y="235" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700">-96.7%</text>
-  <text x="908" y="235" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">915 rows · 5.9 ms</text>
+  <text x="908" y="235" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">915 rows · 3.7 ms</text>
   <rect x="704" y="248" width="420" height="8" rx="2" fill="#ECEAE2"/>
   <rect x="704" y="248" width="14" height="8" rx="2" fill="#116329"/>
   <text x="704" y="276" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">GOLDEN SHA-256: c12f7e26... MATCH</text>

@@ -12,7 +12,7 @@ const http = require("node:http");
  */
 function createSloppyServer(db) {
   return http.createServer(async (req, res) => {
-    const tracker = db.newRequestTracker();
+    const tracker = req.headers["x-unslop-telemetry"] === "1" ? db.newRequestTracker() : null;
     const url = new URL(req.url, "http://127.0.0.1");
     const pathname = url.pathname;
 
@@ -148,10 +148,10 @@ function sendJson(res, status, payload, tracker) {
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "content-length": Buffer.byteLength(body, "utf8"),
-    "x-unslop-queries": String(tracker.queryCount),
-    "x-unslop-rows-scanned": String(tracker.rowsScanned),
-    "x-unslop-internal-bytes": String(tracker.internalBytesRead),
-    "x-unslop-plan": [...tracker.plans].join(" | ") || "NONE",
+    "x-unslop-queries": String(tracker ? tracker.queryCount : 0),
+    "x-unslop-rows-scanned": String(tracker ? tracker.rowsScanned : 0),
+    "x-unslop-internal-bytes": String(tracker ? tracker.internalBytesRead : 0),
+    "x-unslop-plan": tracker ? [...tracker.plans].join(" | ") || "NONE" : "UNTIMED",
   });
   res.end(body);
 }

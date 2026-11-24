@@ -49,7 +49,7 @@ function percentile(sortedNums, p) {
   return Number(sortedNums[idx].toFixed(3));
 }
 
-function createUptimeKumaSqliteFixture({ withFixIndexes = false } = {}) {
+function createUptimeKumaSqliteFixture({ withFixIndexes = false, forceFallbackStats = false } = {}) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "unslop-uptime-kuma-"));
   const dbPath = path.join(tmpDir, "kuma.db");
   const sqlite = new DatabaseSync(dbPath);
@@ -300,7 +300,7 @@ function createUptimeKumaSqliteFixture({ withFixIndexes = false } = {}) {
       CREATE INDEX IF NOT EXISTS idx_incident_status_pin_active
         ON incident (status_page_id, pin, active, created_date DESC);
       CREATE INDEX IF NOT EXISTS idx_maintenance_sp
-        ON maintenance_status_page (status_page_id);
+        ON maintenance_status_page (status_page_id, maintenance_id);
       ANALYZE;
     `);
   }
@@ -336,39 +336,85 @@ function createUptimeKumaSqliteFixture({ withFixIndexes = false } = {}) {
     return details;
   }
 
-  function track(tracker, sql, returnedCount, bytesRead) {
+  function track(tracker, sql, rowsArr, returnedCount, bytesRead, fsSteps, isSingleGet) {
     tracker.queryCount += 1;
     tracker.internalBytesRead += bytesRead;
+    if (typeof fsSteps === "number") {
+      tracker.fullscanSteps += fsSteps;
+    }
+
     const details = getPlanDetails(sql);
-    let scannedHere = 0;
+    let scanTables = 0;
+    let searchNodes = 0;
+    let scanRowsFallback = 0;
+
     for (const detail of details) {
+      // Ignore SQLite internal CTE/constant-row bookkeeping from synthetic VALUES lists
+      if (/\b(?:CO-ROUTINE targets|SCAN \d+ CONSTANT ROWS|SCAN t)\b/.test(detail)) {
+        continue;
+      }
       tracker.plans.add(detail);
+
       const m = detail.match(/\bSCAN\s+(?:TABLE\s+)?([A-Za-z0-9_"]+)/);
       if (m) {
         const alias = m[1].replace(/"/g, "");
         const tbl = alias === "mt" ? "monitor_tag" : alias;
-        scannedHere += tableCounts[tbl] ?? returnedCount;
+        if (Object.prototype.hasOwnProperty.call(tableCounts, tbl)) {
+          scanTables += 1;
+          if (isSingleGet && rowsArr.length === 1 && typeof rowsArr[0].id === "number") {
+            const cRow = sqlite.prepare(`SELECT COUNT(*) AS c FROM "${tbl}" WHERE rowid <= ?`).get(rowsArr[0].id);
+            scanRowsFallback += cRow ? Number(cRow.c) : tableCounts[tbl];
+          } else {
+            scanRowsFallback += tableCounts[tbl];
+          }
+        }
       } else if (/\bSEARCH\b/.test(detail)) {
-        scannedHere += Math.max(1, returnedCount);
+        searchNodes += 1;
       }
     }
+
+    let scannedHere = 0;
+    if (typeof fsSteps === "number" && scanTables > 0) {
+      // Real C-level sqlite3_stmt_status(SQLITE_STMTSTATUS_FULLSCAN_STEP) + initial seek rows + joined index seeks
+      const initRows = returnedCount > 0 || scanRowsFallback > 0 ? scanTables : 0;
+      scannedHere = fsSteps + initRows + searchNodes * returnedCount;
+    } else if (scanTables > 0) {
+      scannedHere = scanRowsFallback + searchNodes * returnedCount;
+    } else if (searchNodes > 0) {
+      scannedHere = searchNodes * Math.max(1, returnedCount);
+    }
+
     tracker.rowsScanned += Math.max(returnedCount, scannedHere);
   }
 
   function queryAll(tracker, sql, params = []) {
-    const rows = getStmt(sql).all(...params);
-    track(tracker, sql, rows.length, estimateBytes(rows));
+    const stmt = getStmt(sql);
+    if (!tracker) {
+      return stmt.all(...params);
+    }
+    const useStat = !forceFallbackStats && typeof stmt.stat === "function";
+    if (useStat) stmt.resetStats();
+    const rows = stmt.all(...params);
+    const fsSteps = useStat ? stmt.stat("fullscanStep") : null;
+    track(tracker, sql, rows, rows.length, estimateBytes(rows), fsSteps, false);
     return rows;
   }
 
   function queryGet(tracker, sql, params = []) {
-    const row = getStmt(sql).get(...params) || null;
-    track(tracker, sql, row ? 1 : 0, row ? estimateBytes(row) : 0);
+    const stmt = getStmt(sql);
+    if (!tracker) {
+      return stmt.get(...params) || null;
+    }
+    const useStat = !forceFallbackStats && typeof stmt.stat === "function";
+    if (useStat) stmt.resetStats();
+    const row = stmt.get(...params) || null;
+    const fsSteps = useStat ? stmt.stat("fullscanStep") : null;
+    track(tracker, sql, row ? [row] : [], row ? 1 : 0, row ? estimateBytes(row) : 0, fsSteps, true);
     return row;
   }
 
   function newTracker() {
-    return { queryCount: 0, rowsScanned: 0, internalBytesRead: 0, plans: new Set() };
+    return { queryCount: 0, rowsScanned: 0, internalBytesRead: 0, fullscanSteps: 0, plans: new Set() };
   }
 
   function close() {
@@ -382,8 +428,7 @@ function createUptimeKumaSqliteFixture({ withFixIndexes = false } = {}) {
 }
 
 // Verbatim reproduction of louislam/uptime-kuma StatusPage.getStatusPageData + Group.toPublicJSON + Monitor.toPublicJSON
-function runBaselineStatusPageData(db, slug = "prod-status") {
-  const tracker = db.newTracker();
+function runBaselineStatusPageData(db, slug = "prod-status", tracker = null) {
   const statusPage = db.queryGet(tracker, "SELECT * FROM status_page WHERE slug = ?", [slug]);
 
   const config = {
@@ -491,8 +536,8 @@ function runBaselineStatusPageData(db, slug = "prod-status") {
 }
 
 // Verbatim reproduction of louislam/uptime-kuma StatusPage.getRSSPageData (status_page.js:277-307)
-function runBaselineRssPageData(db, slug = "prod-status") {
-  const { data, tracker } = runBaselineStatusPageData(db, slug);
+function runBaselineRssPageData(db, slug = "prod-status", tracker = null) {
+  const { data } = runBaselineStatusPageData(db, slug, tracker);
   const heartbeats = [];
 
   for (const monitorGroup of data.publicGroupList) {
@@ -523,8 +568,7 @@ function runBaselineRssPageData(db, slug = "prod-status") {
 }
 
 // Unslopped: indexed + batched IN queries + explicit monitor column projection (zero SELECT monitor.*)
-function runUnsloppedStatusPageData(db, slug = "prod-status") {
-  const tracker = db.newTracker();
+function runUnsloppedStatusPageData(db, slug = "prod-status", tracker = null) {
   const statusPage = db.queryGet(
     tracker,
     "SELECT id, slug, title, description, icon, theme, published, show_tags, show_certificate_expiry FROM status_page WHERE slug = ?",
@@ -670,8 +714,8 @@ function runUnsloppedStatusPageData(db, slug = "prod-status") {
   };
 }
 
-function runUnsloppedRssPageData(db, slug = "prod-status") {
-  const { data, tracker } = runUnsloppedStatusPageData(db, slug);
+function runUnsloppedRssPageData(db, slug = "prod-status", tracker = null) {
+  const { data } = runUnsloppedStatusPageData(db, slug, tracker);
   const monitorIds = [];
   for (const g of data.publicGroupList) {
     for (const m of g.monitorList) monitorIds.push(m.id);
@@ -680,17 +724,19 @@ function runUnsloppedRssPageData(db, slug = "prod-status") {
   const latestHbMap = new Map();
 
   if (uniqueIds.length > 0) {
-    const placeholders = uniqueIds.map(() => "?").join(", ");
+    const valueTuples = uniqueIds.map(() => "(?)").join(", ");
     const rows = db.queryAll(
       tracker,
-      `SELECT monitor_id, status, time
-       FROM (
-         SELECT monitor_id, status, time,
-                ROW_NUMBER() OVER (PARTITION BY monitor_id ORDER BY time DESC) AS rn
-         FROM heartbeat
-         WHERE monitor_id IN (${placeholders})
-       )
-       WHERE rn = 1`,
+      `WITH targets(mid) AS (VALUES ${valueTuples})
+       SELECT h.monitor_id, h.status, h.time
+       FROM targets t
+       JOIN heartbeat h ON h.id = (
+         SELECT h2.id
+         FROM heartbeat h2
+         WHERE h2.monitor_id = t.mid
+         ORDER BY h2.time DESC
+         LIMIT 1
+       )`,
       uniqueIds
     );
     for (const r of rows) latestHbMap.set(r.monitor_id, r);
@@ -719,36 +765,62 @@ function runUnsloppedRssPageData(db, slug = "prod-status") {
   };
 }
 
-function measureWorkload(fn, iterations, warmup) {
-  for (let w = 0; w < warmup; w += 1) fn();
+function measureWorkload(timedFn, telemetryFn, iterations, warmup) {
+  for (let w = 0; w < warmup; w += 1) timedFn();
   const durations = [];
   const heapBefore = process.memoryUsage().heapUsed;
-  let last = null;
+  let lastTimed = null;
   for (let i = 0; i < iterations; i += 1) {
     const t0 = process.hrtime.bigint();
-    last = fn();
+    lastTimed = timedFn();
     durations.push(Number(process.hrtime.bigint() - t0) / 1e6);
   }
   const heapDeltaKb = Number(Math.max(0, (process.memoryUsage().heapUsed - heapBefore) / 1024).toFixed(2));
   durations.sort((a, b) => a - b);
 
+  // Separate un-timed instrumentation pass so JSON byte counting / EXPLAIN / stat never bias latency
+  const telemetry = telemetryFn();
+  if (canonicalJsonSha256(lastTimed.data) !== canonicalJsonSha256(telemetry.data)) {
+    throw new Error("Timed vs telemetry parity mismatch");
+  }
+
   return {
     durations,
     heapDeltaKb,
-    last,
+    last: telemetry,
   };
 }
 
-function runUptimeKumaBenchmark({ iterations = 15, warmup = 3 } = {}) {
-  const baseDb = createUptimeKumaSqliteFixture({ withFixIndexes: false });
-  const fixDb = createUptimeKumaSqliteFixture({ withFixIndexes: true });
+function runUptimeKumaBenchmark({ iterations = 15, warmup = 3, forceFallbackStats = false } = {}) {
+  const baseDb = createUptimeKumaSqliteFixture({ withFixIndexes: false, forceFallbackStats });
+  const fixDb = createUptimeKumaSqliteFixture({ withFixIndexes: true, forceFallbackStats });
 
   try {
-    const bStatus = measureWorkload(() => runBaselineStatusPageData(baseDb, "prod-status"), iterations, warmup);
-    const bRss = measureWorkload(() => runBaselineRssPageData(baseDb, "prod-status"), iterations, warmup);
+    const bStatus = measureWorkload(
+      () => runBaselineStatusPageData(baseDb, "prod-status", null),
+      () => runBaselineStatusPageData(baseDb, "prod-status", baseDb.newTracker()),
+      iterations,
+      warmup
+    );
+    const bRss = measureWorkload(
+      () => runBaselineRssPageData(baseDb, "prod-status", null),
+      () => runBaselineRssPageData(baseDb, "prod-status", baseDb.newTracker()),
+      iterations,
+      warmup
+    );
 
-    const aStatus = measureWorkload(() => runUnsloppedStatusPageData(fixDb, "prod-status"), iterations, warmup);
-    const aRss = measureWorkload(() => runUnsloppedRssPageData(fixDb, "prod-status"), iterations, warmup);
+    const aStatus = measureWorkload(
+      () => runUnsloppedStatusPageData(fixDb, "prod-status", null),
+      () => runUnsloppedStatusPageData(fixDb, "prod-status", fixDb.newTracker()),
+      iterations,
+      warmup
+    );
+    const aRss = measureWorkload(
+      () => runUnsloppedRssPageData(fixDb, "prod-status", null),
+      () => runUnsloppedRssPageData(fixDb, "prod-status", fixDb.newTracker()),
+      iterations,
+      warmup
+    );
 
     const toEntry = (id, label, cmd, res) => {
       const payload = JSON.stringify(res.last.data);
@@ -767,7 +839,7 @@ function runUptimeKumaBenchmark({ iterations = 15, warmup = 3 } = {}) {
         p95_ms: percentile(res.durations, 95),
         p99_ms: percentile(res.durations, 99),
         heap_delta_kb: res.heapDeltaKb,
-        explain_plan_type: [...t.plans].slice(0, 6).join(" | "),
+        explain_plan_type: [...t.plans].join(" | ") || "NONE",
       };
     };
 

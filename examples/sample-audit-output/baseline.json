@@ -3,7 +3,7 @@
   "run_id": "sloppy-saas-sqlite-sloppy",
   "phase": "baseline",
   "target_commit": "local-sqlite-fixture-v2",
-  "captured_at": "2026-11-24T01:20:48.904Z",
+  "captured_at": "2026-11-24T02:16:52.006Z",
   "cache_mode": "warm",
   "dataset_rows": 5000,
   "iterations": 15,
@@ -19,10 +19,10 @@
       "rows_scanned": 755050,
       "internal_bytes_read": 178205,
       "payload_bytes": 10572,
-      "p50_ms": 85.318,
-      "p95_ms": 92.102,
-      "p99_ms": 92.102,
-      "heap_delta_kb": 823.77,
+      "p50_ms": 77.504,
+      "p95_ms": 95.587,
+      "p99_ms": 95.587,
+      "heap_delta_kb": 6090.42,
       "explain_plan_type": "SCAN orders | USE TEMP B-TREE FOR ORDER BY | SEARCH users USING INDEX sqlite_autoindex_users_1 (id=?) | SCAN order_items"
     },
     {
@@ -35,10 +35,10 @@
       "rows_scanned": 5005,
       "internal_bytes_read": 802086,
       "payload_bytes": 412,
-      "p50_ms": 30.481,
-      "p95_ms": 36.318,
-      "p99_ms": 36.318,
-      "heap_delta_kb": 3685.61,
+      "p50_ms": 25.22,
+      "p95_ms": 25.683,
+      "p99_ms": 25.683,
+      "heap_delta_kb": 1164.89,
       "explain_plan_type": "SCAN orders | SEARCH users USING INDEX sqlite_autoindex_users_1 (id=?)"
     },
     {
@@ -51,10 +51,10 @@
       "rows_scanned": 4,
       "internal_bytes_read": 305,
       "payload_bytes": 390,
-      "p50_ms": 29.679,
-      "p95_ms": 37.88,
-      "p99_ms": 37.88,
-      "heap_delta_kb": 2043.15,
+      "p50_ms": 28.627,
+      "p95_ms": 35.634,
+      "p99_ms": 35.634,
+      "heap_delta_kb": 2000.42,
       "explain_plan_type": "LOCAL_HTTP_GUNZIP_SHARD"
     },
     {
@@ -67,10 +67,10 @@
       "rows_scanned": 5000,
       "internal_bytes_read": 641274,
       "payload_bytes": 641300,
-      "p50_ms": 36.264,
-      "p95_ms": 64.905,
-      "p99_ms": 64.905,
-      "heap_delta_kb": 0,
+      "p50_ms": 31.01,
+      "p95_ms": 34.752,
+      "p99_ms": 34.752,
+      "heap_delta_kb": 901.52,
       "explain_plan_type": "SCAN orders | USE TEMP B-TREE FOR ORDER BY",
       "row_ids_sha256": "3b15ece1f6e9a310d98056f2364c39379ecd009f30bbe3570a7b6d294b830d7d"
     }

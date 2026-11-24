@@ -129,8 +129,8 @@ Paired Benchmark Gate: **PASS** (`cache_mode=warm`, `dataset_rows=25000`)
 
 | Workload | Queries (Before → After) | Rows Scanned | Internal / Payload Bytes | p95 Latency | Golden Parity | Gate |
 |---|---:|---:|---:|---:|---|---|
-| `uptime-kuma-status-page-data` | 214 → 7 (-96.7%) | 410504 → 915 (-99.8%) | 374202B int → 185814B int (-50.3%) | 63.91ms → 5.89ms (-90.8%) | MATCH (SHA-256) | PASS |
-| `uptime-kuma-rss-page-data` | 314 → 8 (-97.5%) | 410604 → 1015 (-99.8%) | 385352B int → 192107B int (-50.1%) | 95.26ms → 10.40ms (-89.1%) | MATCH (SHA-256) | PASS |
+| `uptime-kuma-status-page-data` | 214 → 7 (-96.7%) | 315554 → 915 (-99.7%) | 374202B int → 185814B int (-50.3%) | 50.70ms → 3.67ms (-92.8%) | MATCH (SHA-256) | PASS |
+| `uptime-kuma-rss-page-data` | 314 → 8 (-97.5%) | 315654 → 1115 (-99.7%) | 385352B int → 192107B int (-50.1%) | 54.82ms → 3.44ms (-93.7%) | MATCH (SHA-256) | PASS |
 ```
 
 ### How the deterministic gates stop an agent from cheating
@@ -155,24 +155,24 @@ To verify `unslop-backend` on real production open-source code rather than toy e
 node examples/case-studies/uptime-kuma/reproduce.cjs
 ```
 
-| Upstream Workload (`10` groups, `100` monitors, `25,000` heartbeats) | Queries (Before → After) | Rows Scanned | Real SQLite p95 | Golden Parity |
+| Upstream Workload (`10` groups, `100` monitors, `25,000` heartbeats) | Queries (Before → After) | Rows Examined | Uninstrumented p95 | Golden Parity |
 |---|---:|---:|---:|---|
-| [`StatusPage.getStatusPageData`](examples/case-studies/uptime-kuma/README.md) | `214 → 7 (-96.7%)` | `410,504 → 915 (-99.8%)` | `63.91 ms → 5.89 ms (-90.8%)` | `MATCH (SHA-256)` |
-| [`StatusPage.getRSSPageData`](examples/case-studies/uptime-kuma/README.md) | `314 → 8 (-97.5%)` | `410,604 → 1,015 (-99.8%)` | `95.26 ms → 10.40 ms (-89.1%)` | `MATCH (SHA-256)` |
+| [`StatusPage.getStatusPageData`](examples/case-studies/uptime-kuma/README.md) | `214 → 7 (-96.7%)` | `315,554 → 915 (-99.7%)` | `50.70 ms → 3.67 ms (-92.8%)` | `MATCH (SHA-256)` |
+| [`StatusPage.getRSSPageData`](examples/case-studies/uptime-kuma/README.md) | `314 → 8 (-97.5%)` | `315,654 → 1,115 (-99.7%)` | `54.82 ms → 3.44 ms (-93.7%)` | `MATCH (SHA-256)` |
 
 ```diff
 # Actual SQLite EXPLAIN QUERY PLAN transition (StatusPage.getStatusPageData + getRSSPageData)
-- SCAN incident / SCAN maintenance_status_page / SCAN group / SCAN mt (x100) / SCAN monitor_tls_info (x100) / USE TEMP B-TREE FOR ORDER BY
+- SCAN incident / SCAN maintenance_status_page / SCAN group / SCAN monitor_group / SCAN mt (x100) / SCAN monitor_tls_info (x100) / USE TEMP B-TREE FOR ORDER BY
 + SEARCH incident USING INDEX idx_incident_status_pin_active
-+ SEARCH maintenance_status_page USING INDEX idx_maintenance_sp
++ SEARCH maintenance_status_page USING COVERING INDEX idx_maintenance_sp
 + SEARCH group USING INDEX idx_group_status_page_public_weight
 + SEARCH mg USING INDEX idx_monitor_group_group_weight
 + SEARCH mt USING INDEX idx_monitor_tag_monitor        (batched WHERE IN)
 + SEARCH monitor_tls_info USING INDEX idx_monitor_tls_info_monitor
-+ ROW_NUMBER() OVER (PARTITION BY monitor_id ORDER BY time DESC)
++ SEARCH h2 USING COVERING INDEX monitor_time_index    (correlated single-seek per monitor)
 ```
 
-Full schema and SQL query breakdown: [`examples/case-studies/uptime-kuma/README.md`](examples/case-studies/uptime-kuma/README.md).
+> **Scope & timing honesty:** Upstream [`status-page-router.js`](https://github.com/louislam/uptime-kuma/blob/1cc2fa7b1c9ec2be8e610167c8208309283177f2/server/routers/status-page-router.js#L16-L60) wraps these routes in 5-minute `apicache`, so this 214/314-query cascade fires on cache misses, cold starts, and post-edit invalidation (on fresh v2 schemas built by `db/knex_init_db.js`). Wall-clock p95 is timed on an uninstrumented pass completely separated from `EXPLAIN`, serialization byte-counting, and `stmt.stat("fullscanStep")` / `rowid` scan capture. Full breakdown: [`examples/case-studies/uptime-kuma/README.md`](examples/case-studies/uptime-kuma/README.md).
 
 ---
 
@@ -224,8 +224,8 @@ Every finding and unit coverage check maps to one of the 8 canonical classes in 
   "verdict": "fixed",
   "severity": "critical",
   "title": "Eliminated 101-query SQLite N+1 cascade and 755k-row full scans on GET /api/orgs/:orgId/orders",
-  "baseline_metrics": { "queries_per_req": 101, "rows_scanned": 755050, "internal_bytes_read": 178205, "p95_ms": 92.102 },
-  "after_metrics": { "queries_per_req": 3, "rows_scanned": 220, "internal_bytes_read": 12946, "p95_ms": 3.406 },
+  "baseline_metrics": { "queries_per_req": 101, "rows_scanned": 755050, "internal_bytes_read": 178205, "p95_ms": 95.587 },
+  "after_metrics": { "queries_per_req": 3, "rows_scanned": 220, "internal_bytes_read": 12946, "p95_ms": 1.994 },
   "golden_match": true,
   "skeptic_attempted": true,
   "regression_guard_test": "node --test examples/sloppy-saas-api/benchmarks/slop-proof.bench.test.cjs"
@@ -256,12 +256,12 @@ npm run validate:sample
 node skills/unslop-backend/scan-slop.cjs examples/sloppy-saas-api/sloppy-server.js
 ```
 
-| Fixture Workload | Queries (Before → After) | Rows Scanned | Payload / Internal Bytes | Real p95 Latency | Parity Gate |
+| Fixture Workload | Queries (Before → After) | Rows Examined | Payload / Internal Bytes | Uninstrumented p95 | Parity Gate |
 |---|---:|---:|---:|---:|---|
-| `orders-list` | `101 → 3 (-97.0%)` | `755,050 → 220 (-100.0%)` | `178.2 KB → 12.9 KB int (-92.7%)` | `92.10 ms → 3.41 ms (-96.3%)` | `golden_sha256` MATCH |
-| `org-dashboard` | `6 → 2 (-66.7%)` | `5,005 → 11 (-99.8%)` | `802.1 KB → 378 B int (-100.0%)` | `36.32 ms → 2.12 ms (-94.2%)` | `golden_sha256` MATCH |
-| `order-enrichment` | `4 → 4` *(libuv parallel shards)* | `4 → 4` | `390 B → 390 B` | `37.88 ms → 22.46 ms (-40.7%)` | `golden_sha256` MATCH |
-| `orders-export` | `1 → 1` *(SQL `LIMIT 200` + projection)* | `5,000 → 200 (-96.0%)` | `641.3 KB → 29.9 KB HTTP (-95.3%)` | `64.91 ms → 4.97 ms (-92.3%)` | `row_ids_sha256` MATCH |
+| `orders-list` | `101 → 3 (-97.0%)` | `755,050 → 220 (-100.0%)` | `178.2 KB → 12.9 KB int (-92.7%)` | `95.59 ms → 1.99 ms (-97.9%)` | `golden_sha256` MATCH |
+| `org-dashboard` | `6 → 2 (-66.7%)` | `5,005 → 505 (-89.9%)` | `802.1 KB → 378 B int (-100.0%)` | `25.68 ms → 1.06 ms (-95.9%)` | `golden_sha256` MATCH |
+| `order-enrichment` | `4 → 4` *(libuv parallel shards)* | `4 → 4` | `390 B → 390 B` | `35.63 ms → 16.56 ms (-53.5%)` | `golden_sha256` MATCH |
+| `orders-export` | `1 → 1` *(SQL `LIMIT 200` + projection)* | `5,000 → 200 (-96.0%)` | `641.3 KB → 29.9 KB HTTP (-95.3%)` | `34.75 ms → 2.59 ms (-92.5%)` | `row_ids_sha256` MATCH |
 
 ---
 
@@ -334,7 +334,7 @@ See [`docs/STATUS.md`](docs/STATUS.md) for the complete verification matrix:
 
 - ✅ **18/18 unit tests** for the static scanner, ledger validator, benchmark comparator, and findings gate (`node --test`, zero external dependencies)
 - ✅ **Real OSS case study (`louislam/uptime-kuma`)**: reproducible `node:sqlite` suite drops `214 → 7` queries (`-96.7%`) and `314 → 8` queries (`-97.5%`) with exact `golden_sha256` match
-- ✅ **Real SQLite CI fixture (`sloppy-saas-api`)**: `101 → 3` queries, `755,050 → 220` rows scanned, `-40.7%` real libuv `zlib.gunzip` HTTP waterfall p95, `-95.3%` export payload, exact `golden_sha256` / `row_ids_sha256` match
+- ✅ **Real SQLite CI fixture (`sloppy-saas-api`)**: `101 → 3` queries, `755,050 → 220` (`orders-list`) & `5,005 → 505` (`org-dashboard`) rows examined, `-53.5%` real libuv `zlib.gunzip` HTTP waterfall p95, `-95.3%` export payload, exact `golden_sha256` / `row_ids_sha256` match
 - ✅ **Cross-platform CI**: verified across `ubuntu-latest`, `macos-latest`, and `windows-latest` on Node `22` and `24` (6/6 matrix jobs)
 - ⚠️ **Live Postgres/MySQL guard**: running live `EXPLAIN (ANALYZE, BUFFERS)` depends on a local DB instance on the target machine; when unavailable, leads remain `needs_validation` (`severity: null`).
 

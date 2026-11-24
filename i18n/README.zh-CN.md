@@ -48,7 +48,7 @@
 
 ## 真实开源案例：`louislam/uptime-kuma` (`94.8k★`) 与本地复现
 
-基于 `node:sqlite` 真实还原 `louislam/uptime-kuma` 上游表结构与 SQL 查询（commit `1cc2fa7`）：`StatusPage.getStatusPageData` 查询数 **`214 → 7 (-96.7%)`**，扫描行数 **`410,504 → 915 (-99.8%)`**，`getRSSPageData` 查询数 **`314 → 8 (-97.5%)`**，且输出保持 **Golden SHA-256 完全一致**（详见 [案例报告](../examples/case-studies/uptime-kuma/README.md)）。
+基于 `node:sqlite` 真实还原 `louislam/uptime-kuma` 上游表结构与 SQL 查询（commit `1cc2fa7`，非缓存命中路径）：`StatusPage.getStatusPageData` 查询数 **`214 → 7 (-96.7%)`**，扫描行数 **`315,554 → 915 (-99.7%)`**，`getRSSPageData` 查询数 **`314 → 8 (-97.5%)`**，耗时测试与统计采样完全解耦，输出保持 **Golden SHA-256 完全一致**（详见 [案例报告](../examples/case-studies/uptime-kuma/README.md)）。
 
 ## 快速安装与本地体验
 

@@ -23,11 +23,15 @@ describe("sloppy-saas-api real node:sqlite & libuv I/O parity proof", () => {
     assert.match(ordA.explain_plan_type, /\bSEARCH orders USING INDEX idx_orders_org_status_created\b/);
     assert.equal(ordA.golden_sha256, ordB.golden_sha256);
 
-    // 2. Real SQLite SELECT * + JS agg -> indexed SQL aggregation
+    // 2. Real SQLite SELECT * + JS agg -> indexed SQL aggregation (honest aggregate index-row count)
     const dashB = bMap.get("org-dashboard");
     const dashA = aMap.get("org-dashboard");
+    const dashFallback = await runBenchmark({ mode: "unslopped", iterations: 1, warmup: 1, forceFallbackStats: true });
+    const dashAFallback = dashFallback.workloads.find((w) => w.workload_id === "org-dashboard");
     assert.equal(dashB.queries_per_req, 6);
     assert.equal(dashA.queries_per_req, 2);
+    assert.ok(dashA.rows_scanned >= 250 && dashA.rows_scanned < 1000);
+    assert.equal(dashA.rows_scanned, dashAFallback.rows_scanned);
     assert.ok(dashB.internal_bytes_read > 500000);
     assert.ok(dashA.internal_bytes_read < 10000);
     assert.equal(dashA.golden_sha256, dashB.golden_sha256);

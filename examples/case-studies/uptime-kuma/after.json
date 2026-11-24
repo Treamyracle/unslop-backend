@@ -3,7 +3,7 @@
   "run_id": "uptime-kuma-unslopped",
   "phase": "after",
   "target_commit": "1cc2fa7b1c9ec2be8e610167c8208309283177f2",
-  "captured_at": "2026-11-24T01:22:04.178Z",
+  "captured_at": "2026-11-24T02:15:27.636Z",
   "cache_mode": "warm",
   "dataset_rows": 25000,
   "iterations": 15,
@@ -19,11 +19,11 @@
       "rows_scanned": 915,
       "internal_bytes_read": 185814,
       "payload_bytes": 43145,
-      "p50_ms": 3.893,
-      "p95_ms": 5.892,
-      "p99_ms": 5.892,
-      "heap_delta_kb": 983.89,
-      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING INDEX idx_maintenance_sp (status_page_id=?) | USE TEMP B-TREE FOR DISTINCT | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?)"
+      "p50_ms": 2.29,
+      "p95_ms": 3.673,
+      "p99_ms": 3.673,
+      "heap_delta_kb": 2598.48,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING COVERING INDEX idx_maintenance_sp (status_page_id=?) | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?) | SEARCH m USING INTEGER PRIMARY KEY (rowid=?) | SEARCH mt USING INDEX idx_monitor_tag_monitor (monitor_id=?) | SEARCH tag USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR ORDER BY | SEARCH monitor_tls_info USING INDEX idx_monitor_tls_info_monitor (monitor_id=?)"
     },
     {
       "workload_id": "uptime-kuma-rss-page-data",
@@ -32,14 +32,14 @@
       "response_status": 200,
       "golden_sha256": "0a1d68c93dc8f998dc1c8216f08671f86dfaae3c54e224b10f9517ebaa3a9b06",
       "queries_per_req": 8,
-      "rows_scanned": 1015,
+      "rows_scanned": 1115,
       "internal_bytes_read": 192107,
       "payload_bytes": 9823,
-      "p50_ms": 8.336,
-      "p95_ms": 10.396,
-      "p99_ms": 10.396,
-      "heap_delta_kb": 5506.03,
-      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING INDEX idx_maintenance_sp (status_page_id=?) | USE TEMP B-TREE FOR DISTINCT | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?)"
+      "p50_ms": 2.522,
+      "p95_ms": 3.436,
+      "p99_ms": 3.436,
+      "heap_delta_kb": 0,
+      "explain_plan_type": "SEARCH status_page USING INDEX sqlite_autoindex_status_page_1 (slug=?) | SEARCH incident USING INDEX idx_incident_status_pin_active (status_page_id=? AND pin=? AND active=?) | SEARCH maintenance_status_page USING COVERING INDEX idx_maintenance_sp (status_page_id=?) | SEARCH group USING INDEX idx_group_status_page_public_weight (status_page_id=? AND public=?) | SEARCH mg USING INDEX idx_monitor_group_group_weight (group_id=?) | SEARCH m USING INTEGER PRIMARY KEY (rowid=?) | SEARCH mt USING INDEX idx_monitor_tag_monitor (monitor_id=?) | SEARCH tag USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR ORDER BY | SEARCH monitor_tls_info USING INDEX idx_monitor_tls_info_monitor (monitor_id=?) | SEARCH h USING INTEGER PRIMARY KEY (rowid=?) | CORRELATED SCALAR SUBQUERY 101 | SEARCH h2 USING COVERING INDEX monitor_time_index (monitor_id=?)"
     }
   ]
 }
