@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Treamyracle/unslop-backend/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Treamyracle/unslop-backend/ci.yml?branch=main&style=flat-square&label=CI" alt="CI status"></a>
+  <a href="https://github.com/Treamyracle/unslop-backend/actions/workflows/ci.yml"><img src="https://github.com/Treamyracle/unslop-backend/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status"></a>
   <img src="https://img.shields.io/badge/Node-%E2%89%A522.5%20(Zero%20Deps%20%C2%B7%20node%3Asqlite)-10B981?style=flat-square" alt="Node 22.5+ Zero Dependencies with node:sqlite">
   <img src="https://img.shields.io/badge/Works%20With-Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Cursor%20%C2%B7%20Antigravity%20%C2%B7%20Gemini%20CLI-06B6D4?style=flat-square" alt="Compatible coding agents">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-3B82F6?style=flat-square" alt="MIT License"></a>
