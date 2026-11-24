@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="unslop-backend icon">
-  <defs>
-    <linearGradient id="tileBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#07131A"/>
-      <stop offset="100%" stop-color="#0F172A"/>
-    </linearGradient>
-    <linearGradient id="emGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#06B6D4"/>
-    </linearGradient>
-  </defs>
-  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#tileBg)" stroke="#10B981" stroke-width="8"/>
-  <!-- Funnel + high-speed gauge chevron representing data/query slimming -->
-  <path d="M54 64 L202 64 L148 130 L148 194 L108 176 L108 130 Z" fill="url(#emGrad)"/>
-  <rect x="164" y="148" width="38" height="12" rx="6" fill="#F59E0B"/>
-  <rect x="164" y="170" width="26" height="12" rx="6" fill="#34D399"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">unslop-backend mark</title>
+  <desc id="logo-desc">Flat geometric Query-Collapse mark: redundant multi-query scan bars reduced into a single verified query bar.</desc>
+
+  <!-- Solid carbon square with subtle hairline edge for dark-mode separation -->
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#141619" stroke="#30363D" stroke-width="4"/>
+
+  <!-- Three staggered N+1 / full-scan bars -->
+  <rect x="52" y="64" width="76" height="18" rx="4" fill="#F6F5F0"/>
+  <rect x="52" y="96" width="112" height="18" rx="4" fill="#F6F5F0"/>
+  <rect x="52" y="128" width="88" height="18" rx="4" fill="#F6F5F0"/>
+
+  <!-- Collapse chevron -->
+  <path d="M180 78 L204 105 L180 132" fill="none" stroke="#9CA3AF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Single verified indexed query bar -->
+  <rect x="52" y="168" width="152" height="24" rx="5" fill="#34D399"/>
 </svg>

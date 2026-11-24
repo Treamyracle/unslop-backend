@@ -1,32 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 220" width="920" height="220" role="img" aria-label="unslop-backend banner">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#07131A"/>
-      <stop offset="100%" stop-color="#0F172A"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#06B6D4"/>
-    </linearGradient>
-  </defs>
-  <rect width="920" height="220" rx="16" fill="url(#bg)" stroke="#1E293B" stroke-width="1.5"/>
-  <rect x="34" y="32" width="66" height="66" rx="14" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
-  <path d="M47 47 L87 47 L73 66 L73 84 L61 78 L61 66 Z" fill="url(#accent)"/>
-  <text x="118" y="64" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.5">unslop-backend</text>
-  <rect x="412" y="38" width="286" height="28" rx="14" fill="#06281E" stroke="#10B981" stroke-width="1"/>
-  <text x="555" y="56" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" font-weight="600">MEASURE · UNSLOP · GOLDEN-VERIFY</text>
-  <text x="118" y="94" fill="#CBD5E1" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15.5">Eliminates N+1 cascades, full table scans, SELECT * bloat &amp; async waterfalls —</text>
-  <text x="118" y="116" fill="#94A3B8" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15.5">every fix is gated by before/after telemetry and exact golden SHA-256 parity.</text>
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">
-    <rect x="34" y="148" width="144" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
-    <text x="106" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">N+1 CASCADES</text>
-    <rect x="190" y="148" width="174" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
-    <text x="277" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">INDEXES &amp; EXPLAIN</text>
-    <rect x="376" y="148" width="164" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
-    <text x="458" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">SELECT * &amp; STREAMS</text>
-    <rect x="552" y="148" width="176" height="34" rx="8" fill="#082F49" stroke="#06B6D4" stroke-width="1"/>
-    <text x="640" y="169" text-anchor="middle" fill="#67E8F9" font-size="11.5">ASYNC WATERFALLS</text>
-    <rect x="740" y="148" width="146" height="34" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
-    <text x="813" y="169" text-anchor="middle" fill="#6EE7B7" font-size="11.5">ZERO NPM DEPS</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 328" width="1200" height="328" role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">unslop-backend — Measurement-First Backend Performance Skill</title>
+  <desc id="hero-desc">Editorial specification card showing how unslop-backend collapses a 214-query N+1 SQLite cascade to 7 indexed queries (-96.7%) with exact golden SHA-256 parity.</desc>
+
+  <!-- Full-canvas warm architectural paper -->
+  <rect x="0" y="0" width="1200" height="328" rx="12" fill="#F6F5F0" stroke="#D6D3C8" stroke-width="2"/>
+
+  <!-- Structural vertical rule -->
+  <line x1="636" y1="34" x2="636" y2="294" stroke="#D6D3C8" stroke-width="1"/>
+
+  <!-- Left Column: Flat Geometric Mark, Wordmark, Concrete Promise, Quiet Metadata -->
+  <text x="52" y="62" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="600" letter-spacing="1.2">BACKEND PERFORMANCE SKILL · ZERO RUNTIME DEPS</text>
+
+  <!-- Inline Flat Query-Collapse Mark -->
+  <rect x="52" y="84" width="52" height="52" rx="10" fill="#141619"/>
+  <rect x="62" y="96" width="14" height="4" rx="1.5" fill="#F6F5F0"/>
+  <rect x="62" y="103" width="22" height="4" rx="1.5" fill="#F6F5F0"/>
+  <rect x="62" y="110" width="17" height="4" rx="1.5" fill="#F6F5F0"/>
+  <path d="M88 100 L94 106 L88 112" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="62" y="120" width="32" height="5" rx="2" fill="#34D399"/>
+
+  <text x="120" y="126" fill="#141619" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-1">unslop-backend</text>
+
+  <text x="52" y="178" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="19" font-weight="400">Stop vibecoded backends from shipping N+1 loops,</text>
+  <text x="52" y="206" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="19" font-weight="400">unindexed scans, and SELECT * bloat at scale.</text>
+
+  <line x1="52" y1="244" x2="596" y2="244" stroke="#D6D3C8" stroke-width="1"/>
+  <text x="52" y="278" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600">SQL · ORM · HTTP  /  EXPLAIN VERIFIED  /  NODE >= 22.5  /  MIT</text>
+
+  <!-- Right Column: Real Measured Case Study Specimen (louislam/uptime-kuma) -->
+  <text x="668" y="48" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="600">SPECIMEN · louislam/uptime-kuma (node:sqlite)</text>
+
+  <rect x="668" y="62" width="480" height="232" rx="6" fill="#FFFFFF" stroke="#D6D3C8" stroke-width="1"/>
+
+  <!-- Before Section -->
+  <rect x="688" y="82" width="3" height="76" rx="1" fill="#B42318"/>
+  <text x="704" y="96" fill="#B42318" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">BEFORE · StatusPage.getStatusPageData</text>
+  <text x="704" y="126" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" font-weight="700">214 queries</text>
+  <text x="886" y="124" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">410,504 rows · 63.9 ms</text>
+  <rect x="704" y="138" width="420" height="8" rx="2" fill="#B42318"/>
+  <text x="704" y="160" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">EXPLAIN: SCAN mt (x100) · SCAN monitor_tls_info</text>
+
+  <line x1="688" y1="178" x2="1124" y2="178" stroke="#E6E3DA" stroke-width="1"/>
+
+  <!-- After Section -->
+  <rect x="688" y="192" width="3" height="86" rx="1" fill="#116329"/>
+  <text x="704" y="206" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">AFTER · batched IN + composite indexes</text>
+  <text x="704" y="236" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" font-weight="700">7 queries</text>
+  <text x="836" y="235" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700">-96.7%</text>
+  <text x="908" y="235" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">915 rows · 5.9 ms</text>
+  <rect x="704" y="248" width="420" height="8" rx="2" fill="#ECEAE2"/>
+  <rect x="704" y="248" width="14" height="8" rx="2" fill="#116329"/>
+  <text x="704" y="276" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">GOLDEN SHA-256: c12f7e26... MATCH</text>
 </svg>

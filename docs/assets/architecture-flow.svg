@@ -1,56 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260" width="920" height="260" role="img" aria-label="Six-phase closed-loop pipeline">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 328" width="1200" height="328" role="img" aria-labelledby="arch-title arch-desc">
+  <title id="arch-title">Six-Phase Closed-Loop Pipeline</title>
+  <desc id="arch-desc">Editorial diagram showing the six verification-gated stages from reconnaissance and baseline capture through coverage hunting, parity gating, skeptic verification, and reporting.</desc>
+
   <defs>
-    <linearGradient id="flowBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#07131A"/>
-      <stop offset="100%" stop-color="#0F172A"/>
-    </linearGradient>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 1 L10 5 L0 9 Z" fill="#10B981"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 1 L10 5 L0 9 Z" fill="#4E545F"/>
     </marker>
   </defs>
-  <rect width="920" height="260" rx="16" fill="url(#flowBg)" stroke="#1E293B" stroke-width="1.5"/>
-  <text x="28" y="34" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">6-Phase Closed-Loop Pipeline (With Deterministic Node Gate Scripts)</text>
 
-  <!-- Row 1: Phases 1 -> 2 -> 3 -->
-  <rect x="28" y="54" width="260" height="72" rx="10" fill="#111C2E" stroke="#06B6D4" stroke-width="1.2"/>
-  <text x="158" y="76" text-anchor="middle" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">1. RECON + PRE-SCAN</text>
-  <text x="158" y="96" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11.5">scan-slop.cjs + 4 research agents</text>
-  <text x="158" y="114" text-anchor="middle" fill="#34D399" font-family="ui-monospace, monospace" font-size="10.5">Gate: validate-workload-ledger</text>
+  <rect x="0" y="0" width="1200" height="328" rx="12" fill="#F6F5F0" stroke="#D6D3C8" stroke-width="2"/>
 
-  <line x1="288" y1="90" x2="322" y2="90" stroke="#10B981" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="44" y="40" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="600" letter-spacing="0.8">SIX-PHASE CLOSED-LOOP PIPELINE</text>
+  <text x="44" y="68" fill="#141619" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="700">Measure, Hunt, Unslop, and Prove with Deterministic Node Gates</text>
 
-  <rect x="330" y="54" width="260" height="72" rx="10" fill="#111C2E" stroke="#06B6D4" stroke-width="1.2"/>
-  <text x="460" y="76" text-anchor="middle" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">2. BASELINE + GOLDEN</text>
-  <text x="460" y="96" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11.5">Seed >=1k rows, paired cache_mode</text>
-  <text x="460" y="114" text-anchor="middle" fill="#34D399" font-family="ui-monospace, monospace" font-size="10.5">Emit baseline.json + golden_sha256</text>
+  <!-- Row 1: Phases 01 -> 02 -> 03 -->
+  <rect x="44" y="96" width="340" height="84" rx="6" fill="#FFFFFF" stroke="#141619" stroke-width="1"/>
+  <text x="214" y="120" text-anchor="middle" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">01 · RECON &amp; PRE-SCAN</text>
+  <text x="214" y="142" text-anchor="middle" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">scan-slop.cjs + 4 research agents</text>
+  <text x="214" y="164" text-anchor="middle" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">Gate: validate-workload-ledger.cjs</text>
 
-  <line x1="590" y1="90" x2="624" y2="90" stroke="#10B981" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="384" y1="138" x2="422" y2="138" stroke="#4E545F" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <rect x="632" y="54" width="260" height="72" rx="10" fill="#111C2E" stroke="#06B6D4" stroke-width="1.2"/>
-  <text x="762" y="76" text-anchor="middle" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">3. COVERAGE HUNTERS</text>
-  <text x="762" y="96" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11.5">8 Slop Classes + Coverage Critic</text>
-  <text x="762" y="114" text-anchor="middle" fill="#34D399" font-family="ui-monospace, monospace" font-size="10.5">Gate: --require-complete (100%)</text>
+  <rect x="430" y="96" width="340" height="84" rx="6" fill="#FFFFFF" stroke="#141619" stroke-width="1"/>
+  <text x="600" y="120" text-anchor="middle" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">02 · BASELINE &amp; GOLDEN</text>
+  <text x="600" y="142" text-anchor="middle" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Seed &gt;= 1k rows, paired cache_mode</text>
+  <text x="600" y="164" text-anchor="middle" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">Emit: baseline.json + golden_sha256</text>
 
-  <!-- Connector down from 3 to 4 -->
-  <line x1="762" y1="126" x2="762" y2="152" stroke="#10B981" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="770" y1="138" x2="808" y2="138" stroke="#4E545F" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <!-- Row 2: Phases 6 <- 5 <- 4 -->
-  <rect x="632" y="160" width="260" height="76" rx="10" fill="#06281E" stroke="#10B981" stroke-width="1.5"/>
-  <text x="762" y="182" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">4. PROVE OR UNSLOP</text>
-  <text x="762" y="202" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11">Minimal fix + after.json + guard</text>
-  <text x="762" y="220" text-anchor="middle" fill="#FBBF24" font-family="ui-monospace, monospace" font-size="10.5">Gate: compare-benchmarks.cjs</text>
+  <rect x="816" y="96" width="340" height="84" rx="6" fill="#FFFFFF" stroke="#141619" stroke-width="1"/>
+  <text x="986" y="120" text-anchor="middle" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">03 · COVERAGE HUNTERS</text>
+  <text x="986" y="142" text-anchor="middle" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">8 Slop Classes + Coverage Critic</text>
+  <text x="986" y="164" text-anchor="middle" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">Gate: --require-complete (100%)</text>
 
-  <line x1="632" y1="198" x2="598" y2="198" stroke="#10B981" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- Vertical drop 03 -> 04 -->
+  <line x1="986" y1="180" x2="986" y2="206" stroke="#4E545F" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <rect x="330" y="160" width="260" height="76" rx="10" fill="#06281E" stroke="#10B981" stroke-width="1.5"/>
-  <text x="460" y="182" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">5. FRESH SKEPTIC</text>
-  <text x="460" y="202" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11">Checks tie-breakers, nulls, tenants</text>
-  <text x="460" y="220" text-anchor="middle" fill="#FBBF24" font-family="ui-monospace, monospace" font-size="10.5">Gate: validate-findings.cjs</text>
+  <!-- Row 2: Phases 06 <- 05 <- 04 (04 is the SINGLE editorial focal node) -->
+  <rect x="816" y="214" width="340" height="84" rx="6" fill="#EAF6EE" stroke="#116329" stroke-width="1.8"/>
+  <text x="986" y="238" text-anchor="middle" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">04 · PROVE OR UNSLOP</text>
+  <text x="986" y="260" text-anchor="middle" fill="#141619" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Minimal fix + after.json + guard</text>
+  <text x="986" y="282" text-anchor="middle" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="700">Gate: compare-benchmarks.cjs</text>
 
-  <line x1="330" y1="198" x2="296" y2="198" stroke="#10B981" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="816" y1="256" x2="778" y2="256" stroke="#4E545F" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <rect x="28" y="160" width="260" height="76" rx="10" fill="#111C2E" stroke="#F59E0B" stroke-width="1.2"/>
-  <text x="158" y="182" text-anchor="middle" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="12" font-weight="700">6. VERIFIED REPORTS</text>
-  <text x="158" y="202" text-anchor="middle" fill="#CBD5E1" font-family="ui-sans-serif, sans-serif" font-size="11.5">REPORT.md + BENCHMARKS.md</text>
-  <text x="158" y="220" text-anchor="middle" fill="#CBD5E1" font-family="ui-monospace, monospace" font-size="10.5">FINDINGS-DETAIL + NEEDS-VALIDATION</text>
+  <rect x="430" y="214" width="340" height="84" rx="6" fill="#FFFFFF" stroke="#141619" stroke-width="1"/>
+  <text x="600" y="238" text-anchor="middle" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">05 · FRESH SKEPTIC</text>
+  <text x="600" y="260" text-anchor="middle" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Checks tie-breakers, nulls, tenants</text>
+  <text x="600" y="282" text-anchor="middle" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">Gate: validate-findings.cjs</text>
+
+  <line x1="430" y1="256" x2="392" y2="256" stroke="#4E545F" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <rect x="44" y="214" width="340" height="84" rx="6" fill="#ECEAE2" stroke="#4E545F" stroke-width="1"/>
+  <text x="214" y="238" text-anchor="middle" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">06 · VERIFIED REPORTS</text>
+  <text x="214" y="260" text-anchor="middle" fill="#4E545F" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">REPORT.md + BENCHMARKS.md</text>
+  <text x="214" y="282" text-anchor="middle" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5">FINDINGS-DETAIL + NEEDS-VALIDATION</text>
 </svg>

@@ -1,40 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 286" width="920" height="286" role="img" aria-label="Real SQLite before vs after benchmark scorecard">
-  <defs>
-    <linearGradient id="scoreBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#07131A"/>
-      <stop offset="100%" stop-color="#0F172A"/>
-    </linearGradient>
-  </defs>
-  <rect width="920" height="286" rx="16" fill="url(#scoreBg)" stroke="#1E293B" stroke-width="1.5"/>
-  <text x="28" y="34" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">Real node:sqlite Scorecards (louislam/uptime-kuma + SaaS CI Fixture)</text>
-  <rect x="688" y="14" width="204" height="28" rx="14" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
-  <text x="790" y="32" text-anchor="middle" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">GOLDEN SHA-256: MATCH</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 396" width="1200" height="396" role="img" aria-labelledby="bench-title bench-desc">
+  <title id="bench-title">Paired Before vs. After Telemetry Across 5 Real SQLite Workloads</title>
+  <desc id="bench-desc">Proportional paired comparison of louislam/uptime-kuma and sloppy-saas-api workloads on real on-disk node:sqlite showing query, row scan, and payload drops with SHA-256 verification.</desc>
 
-  <!-- Card 1: uptime-kuma getStatusPageData -->
-  <rect x="28" y="54" width="424" height="100" rx="10" fill="#111C2E" stroke="#10B981" stroke-width="1.2"/>
-  <text x="44" y="76" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">1. uptime-kuma getStatusPageData (94.8k★)</text>
-  <text x="44" y="99" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 214 queries · 410,504 rows · 63.91 ms</text>
-  <text x="44" y="120" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  7 queries (-96.7%) · 915 rows · 5.89 ms</text>
-  <text x="44" y="141" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden SHA-256: MATCH (c12f7e26... · SCAN->SEARCH)</text>
+  <rect x="0" y="0" width="1200" height="396" rx="12" fill="#F6F5F0" stroke="#D6D3C8" stroke-width="2"/>
 
-  <!-- Card 2: uptime-kuma getRSSPageData -->
-  <rect x="468" y="54" width="424" height="100" rx="10" fill="#111C2E" stroke="#10B981" stroke-width="1.2"/>
-  <text x="484" y="76" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="12" font-weight="700">2. uptime-kuma getRSSPageData (100 monitors)</text>
-  <text x="484" y="99" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 314 queries · 410,604 rows · 95.26 ms</text>
-  <text x="484" y="120" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  8 queries (-97.5%) · 1,015 rows · 10.40 ms</text>
-  <text x="484" y="141" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden SHA-256: MATCH (0a1d68c9... · 89.1% faster)</text>
+  <!-- Header -->
+  <text x="44" y="40" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="600" letter-spacing="0.8">MEASURED TELEMETRY · REAL ON-DISK NODE:SQLITE (ZERO MOCKS)</text>
+  <text x="44" y="70" fill="#141619" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" font-weight="700">Paired Before vs. After Reduction Across 5 Real Workloads</text>
 
-  <!-- Card 3: SaaS CI fixture orders + dashboard -->
-  <rect x="28" y="168" width="424" height="100" rx="10" fill="#111C2E" stroke="#1E293B" stroke-width="1"/>
-  <text x="44" y="190" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">3. SaaS CI Fixture: orders-list (node:sqlite)</text>
-  <text x="44" y="213" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 101 queries · 755,050 rows · 92.10 ms</text>
-  <text x="44" y="234" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  3 queries (-97%) · 220 rows · 3.41 ms</text>
-  <text x="44" y="255" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Dashboard agg: 802 KB -> 378 B (-100% int read)</text>
+  <!-- Quiet Top-Right Legend flush with table right edge -->
+  <rect x="900" y="54" width="12" height="10" rx="2" fill="#D4746A"/>
+  <text x="918" y="64" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">Before</text>
+  <rect x="982" y="54" width="12" height="10" rx="2" fill="#116329"/>
+  <text x="1000" y="64" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">After (SHA-256 OK)</text>
 
-  <!-- Card 4: SaaS CI fixture gunzip + export -->
-  <rect x="468" y="168" width="424" height="100" rx="10" fill="#111C2E" stroke="#1E293B" stroke-width="1"/>
-  <text x="484" y="190" fill="#67E8F9" font-family="ui-monospace, monospace" font-size="12" font-weight="700">4. SaaS CI Fixture: HTTP gunzip + Blob Export</text>
-  <text x="484" y="213" fill="#FCA5A5" font-family="ui-monospace, monospace" font-size="11.5">Before: 37.88 ms waterfall · 641.3 KB export</text>
-  <text x="484" y="234" fill="#6EE7B7" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">After:  22.46 ms (-40.7%) · 29.9 KB (-95.3%)</text>
-  <text x="484" y="255" fill="#FCD34D" font-family="ui-monospace, monospace" font-size="11">Golden Match: SHA-256 + row_ids_sha256 verified</text>
+  <!-- Data Sheet Card -->
+  <rect x="44" y="92" width="1112" height="272" rx="6" fill="#FFFFFF" stroke="#D6D3C8" stroke-width="1"/>
+
+  <!-- Column Headers -->
+  <text x="64" y="118" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="700">WORKLOAD</text>
+  <text x="396" y="118" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="700">PROPORTIONAL REDUCTION</text>
+  <text x="736" y="118" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="700">BEFORE -&gt; AFTER</text>
+  <text x="1048" y="118" fill="#646B78" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="700">PARITY</text>
+  <line x1="64" y1="128" x2="1136" y2="128" stroke="#D6D3C8" stroke-width="1"/>
+
+  <!-- Row 1: uptime-kuma getStatusPageData -->
+  <text x="64" y="156" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">uptime-kuma · getStatusPageData</text>
+  <rect x="396" y="142" width="310" height="7" rx="2" fill="#D4746A"/>
+  <rect x="396" y="153" width="310" height="7" rx="2" fill="#F1EFE8"/>
+  <rect x="396" y="153" width="11" height="7" rx="2" fill="#116329"/>
+  <text x="736" y="156" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">214 -&gt; 7 queries (-96.7%) · 5.89 ms</text>
+  <circle cx="1054" cy="152" r="4" fill="#116329"/>
+  <text x="1064" y="156" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
+  <line x1="64" y1="175" x2="1136" y2="175" stroke="#ECEAE2" stroke-width="1"/>
+
+  <!-- Row 2: uptime-kuma getRSSPageData -->
+  <text x="64" y="203" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">uptime-kuma · getRSSPageData</text>
+  <rect x="396" y="189" width="310" height="7" rx="2" fill="#D4746A"/>
+  <rect x="396" y="200" width="310" height="7" rx="2" fill="#F1EFE8"/>
+  <rect x="396" y="200" width="8" height="7" rx="2" fill="#116329"/>
+  <text x="736" y="203" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">314 -&gt; 8 queries (-97.5%) · 10.4 ms</text>
+  <circle cx="1054" cy="199" r="4" fill="#116329"/>
+  <text x="1064" y="203" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
+  <line x1="64" y1="222" x2="1136" y2="222" stroke="#ECEAE2" stroke-width="1"/>
+
+  <!-- Row 3: saas-fixture orders-list -->
+  <text x="64" y="250" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">saas-fixture · orders-list</text>
+  <rect x="396" y="236" width="310" height="7" rx="2" fill="#D4746A"/>
+  <rect x="396" y="247" width="310" height="7" rx="2" fill="#F1EFE8"/>
+  <rect x="396" y="247" width="9" height="7" rx="2" fill="#116329"/>
+  <text x="736" y="250" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">101 -&gt; 3 queries (-97.0%) · 3.41 ms</text>
+  <circle cx="1054" cy="246" r="4" fill="#116329"/>
+  <text x="1064" y="250" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
+  <line x1="64" y1="269" x2="1136" y2="269" stroke="#ECEAE2" stroke-width="1"/>
+
+  <!-- Row 4: saas-fixture org-dashboard -->
+  <text x="64" y="297" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">saas-fixture · org-dashboard</text>
+  <rect x="396" y="283" width="310" height="7" rx="2" fill="#D4746A"/>
+  <rect x="396" y="294" width="310" height="7" rx="2" fill="#F1EFE8"/>
+  <rect x="396" y="294" width="4" height="7" rx="2" fill="#116329"/>
+  <text x="736" y="297" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">5,005 -&gt; 11 rows (-99.8%) · 2.12 ms</text>
+  <circle cx="1054" cy="293" r="4" fill="#116329"/>
+  <text x="1064" y="297" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">SHA-256</text>
+  <line x1="64" y1="316" x2="1136" y2="316" stroke="#ECEAE2" stroke-width="1"/>
+
+  <!-- Row 5: saas-fixture gunzip + export -->
+  <text x="64" y="343" fill="#141619" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">saas-fixture · gunzip + export</text>
+  <rect x="396" y="329" width="310" height="7" rx="2" fill="#D4746A"/>
+  <rect x="396" y="340" width="310" height="7" rx="2" fill="#F1EFE8"/>
+  <rect x="396" y="340" width="15" height="7" rx="2" fill="#116329"/>
+  <text x="736" y="343" fill="#4E545F" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5">641 -&gt; 30 KB (-95.3%) · -40.7% p95</text>
+  <circle cx="1054" cy="339" r="4" fill="#116329"/>
+  <text x="1064" y="343" fill="#116329" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700">ROW-IDS</text>
 </svg>
